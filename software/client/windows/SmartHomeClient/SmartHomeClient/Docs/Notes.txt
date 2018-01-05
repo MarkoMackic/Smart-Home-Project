@@ -1,0 +1,11 @@
+﻿
+
+For methods that can be called from another thread implement delegate system
+
+
+Delegate Sub _FunctionName(args)
+
+
+public sub functionName(args)
+	if(invokeRequired)
+		invoke(new _functionName(addressof functionName), args)

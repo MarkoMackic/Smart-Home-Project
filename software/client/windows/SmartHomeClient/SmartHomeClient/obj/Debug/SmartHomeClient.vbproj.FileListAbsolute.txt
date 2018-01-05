@@ -1,0 +1,63 @@
+C:\Users\LJiljana\AppData\Local\Temporary Projects\SmartHomeClient\bin\Debug\SmartHomeClient.exe
+C:\Users\LJiljana\AppData\Local\Temporary Projects\SmartHomeClient\bin\Debug\SmartHomeClient.pdb
+C:\Users\LJiljana\AppData\Local\Temporary Projects\SmartHomeClient\bin\Debug\SmartHomeClient.xml
+C:\Users\LJiljana\AppData\Local\Temporary Projects\SmartHomeClient\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\LJiljana\AppData\Local\Temporary Projects\SmartHomeClient\obj\Debug\SmartHomeClient.Form1.resources
+C:\Users\LJiljana\AppData\Local\Temporary Projects\SmartHomeClient\obj\Debug\SmartHomeClient.Resources.resources
+C:\Users\LJiljana\AppData\Local\Temporary Projects\SmartHomeClient\obj\Debug\SmartHomeClient.vbproj.GenerateResource.Cache
+C:\Users\LJiljana\AppData\Local\Temporary Projects\SmartHomeClient\obj\Debug\SmartHomeClient.exe
+C:\Users\LJiljana\AppData\Local\Temporary Projects\SmartHomeClient\obj\Debug\SmartHomeClient.xml
+C:\Users\LJiljana\AppData\Local\Temporary Projects\SmartHomeClient\obj\Debug\SmartHomeClient.pdb
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.exe
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.pdb
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.Form1.resources
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.Resources.resources
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.vbproj.GenerateResource.Cache
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\SmartHomeClient.exe
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\SmartHomeClient.pdb
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\SmartHomeClient.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\DB.sdf
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\SmartHomeClient.exe.config
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\zxing.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.vbprojResolveAssemblyReference.cache
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Res\QRTest\coupon.png
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.UI.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\ZedGraph.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.UI.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.DebuggerVisualizers.VS2010.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.ML.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.OCR.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.Stitching.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.Util.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.ML.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.OCR.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.Stitching.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.Util.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\cvextern.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Res\QRTest\barcode.png
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Res\Haarcascade\haarcascade_eye.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Res\Haarcascade\haarcascade_frontalface_default.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.FaceRecognition.resources
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Res\FaceRecognition\user.png
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\msvcp120.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\msvcr120.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\opencv_ffmpeg300_64.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.Contrib.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.Cuda.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.DebuggerVisualizers.VS2012.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.DebuggerVisualizers.VS2013.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.DebuggerVisualizers.VS2015.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.Shape.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.Superres.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.UI.GL.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.VideoStab.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.Contrib.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.Cuda.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.Shape.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.Superres.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.UI.GL.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.VideoStab.xml
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Res\Images\smart_iot.png
