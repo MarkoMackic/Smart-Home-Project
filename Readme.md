@@ -10,8 +10,8 @@ I've done the hardware control over serial port ( but protocol changes will be d
 
 The commands currently supported by hardware are :
 * `pps -> `It will print PWM values ( last written by aw command ) to software in format `<pwm>pin:value;pin:value; ... </pwm>`
-* `pds -> `It will print DIGITAL states ( last written by dw command ) to software in format `<pwm>pin:state;pin:state; ... </pwm>`
-* `pas -> `It will print ANALOG values read from analog inputs to software in format `<as>pin:value;pin:value; ... </as>`
+* `pds -> `It will print DIGITAL states ( last written by dw command ) to software in format `<ds>pin:state;pin:state; ... </ds>`
+* `pas -> `It will print ANALOG values read from analog inputs to software in format `<an>pin:value;pin:value; ... </an>`
 * `pm:pin:mode ->` pinMode(pin, mode) . Mode is either 0 if the pin is input or 1 if the pin is output.
 * `dw:pin:state ->` digtialWrite(pin, state) . State is either 0 or 1.
 * `aw:pin:value ->` analogWrite(pin, value). Value is value 0 - 255.
