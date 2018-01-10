@@ -1,6 +1,7 @@
 ﻿Public Class MessageHandler
-    Public Function handleDeviceMessage(ByVal msg As String)
 
+    Public Function SerialDataRecieved(ByVal msg As String)
+        Debug.WriteLine("MH : " + msg)
         Return 0
     End Function
     Public Function handleServerMessage(ByVal msg As String)

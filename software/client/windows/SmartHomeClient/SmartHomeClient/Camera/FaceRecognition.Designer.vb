@@ -33,6 +33,7 @@ Partial Class FaceRecognition
         Me.Label2 = New System.Windows.Forms.Label()
         Me.facebox1 = New System.Windows.Forms.PictureBox()
         Me.Label3 = New System.Windows.Forms.Label()
+        Me.btnRecognize = New System.Windows.Forms.Button()
         CType(Me.faceBox, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.EventLog1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.facebox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -58,7 +59,7 @@ Partial Class FaceRecognition
         '
         'btnNext
         '
-        Me.btnNext.Location = New System.Drawing.Point(211, 318)
+        Me.btnNext.Location = New System.Drawing.Point(174, 318)
         Me.btnNext.Name = "btnNext"
         Me.btnNext.Size = New System.Drawing.Size(75, 23)
         Me.btnNext.TabIndex = 2
@@ -67,7 +68,7 @@ Partial Class FaceRecognition
         '
         'btnNew
         '
-        Me.btnNew.Location = New System.Drawing.Point(106, 318)
+        Me.btnNew.Location = New System.Drawing.Point(93, 318)
         Me.btnNew.Name = "btnNew"
         Me.btnNew.Size = New System.Drawing.Size(75, 23)
         Me.btnNew.TabIndex = 3
@@ -80,7 +81,7 @@ Partial Class FaceRecognition
         '
         'saveBtn
         '
-        Me.saveBtn.Location = New System.Drawing.Point(316, 318)
+        Me.saveBtn.Location = New System.Drawing.Point(255, 318)
         Me.saveBtn.Name = "saveBtn"
         Me.saveBtn.Size = New System.Drawing.Size(75, 23)
         Me.saveBtn.TabIndex = 4
@@ -106,7 +107,7 @@ Partial Class FaceRecognition
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(405, 119)
+        Me.Label2.Location = New System.Drawing.Point(400, 119)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(39, 13)
         Me.Label2.TabIndex = 7
@@ -127,16 +128,26 @@ Partial Class FaceRecognition
         Me.Label3.AutoSize = True
         Me.Label3.Location = New System.Drawing.Point(313, 119)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(80, 13)
+        Me.Label3.Size = New System.Drawing.Size(81, 13)
         Me.Label3.TabIndex = 9
-        Me.Label3.Text = "Eigen distance:"
+        Me.Label3.Text = "LBPH distance:"
         Me.Label3.Visible = False
+        '
+        'btnRecognize
+        '
+        Me.btnRecognize.Location = New System.Drawing.Point(336, 318)
+        Me.btnRecognize.Name = "btnRecognize"
+        Me.btnRecognize.Size = New System.Drawing.Size(75, 23)
+        Me.btnRecognize.TabIndex = 10
+        Me.btnRecognize.Text = "Recognize"
+        Me.btnRecognize.UseVisualStyleBackColor = True
         '
         'FaceRecognition
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(859, 367)
+        Me.ClientSize = New System.Drawing.Size(896, 367)
+        Me.Controls.Add(Me.btnRecognize)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.facebox1)
         Me.Controls.Add(Me.Label2)
@@ -167,4 +178,5 @@ Partial Class FaceRecognition
     Friend WithEvents Label2 As System.Windows.Forms.Label
     Friend WithEvents facebox1 As System.Windows.Forms.PictureBox
     Friend WithEvents Label3 As System.Windows.Forms.Label
+    Friend WithEvents btnRecognize As System.Windows.Forms.Button
 End Class

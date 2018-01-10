@@ -9,17 +9,20 @@
  *  as:pin -> attachServo
  *  ds:pin -> detachServo
  *  sp:pin:pos -> Servo.write(pos) -> pin
+ *  
+ *  
+ *  
+ *  
  * 
  */
 
 #include <Servo.h>
 
 
-#define ok_msg F("OK")
-#define err_msg F("ERROR")
 #define max_cmd_size 60
 
-
+char ok_msg[] = "OK";
+char err_msg[] = "ERROR";
 
 boolean vertified = 0;
 char input[max_cmd_size];
@@ -40,16 +43,21 @@ byte servoPins[max_servos];
 
 void setup(){
 	for(byte i=0;i<54;i++){
-		pinMode(i,OUTPUT);
+		pinMode(i,INPUT);
+    //digitalWrite(i,0);
 	}
 	Serial.begin(115200);
+  Serial.flush();
+  in_buffer_empty();
 	getAuth();
 }
 
 void loop(){
 	if(vertified){
 		//Now we're ok 
+    if(Serial.available()){
 		getCmd();
+    }
 	}else{
 		//Reg again
 		getAuth();
@@ -63,8 +71,7 @@ void in_buffer_empty(){
 //auth program with house
 void getAuth(){
   in_buffer_empty();
-	while(!(Serial.available()>4));
-
+	while(!Serial.available());
 	for( int i = 0; i < sizeof(input);  i++ )
    		input[i] = (char)0;
 	index = 0;
@@ -96,8 +103,8 @@ void getAuth(){
 //interpret the command from pc
 void getCmd(){
   //in_buffer_empty();
-  in_buffer_empty();
-  while(!Serial.available()){;}
+  //in_buffer_empty();
+  
   
 	
 		for( int i = 0; i < sizeof(input);  i++ )
@@ -113,7 +120,7 @@ void getCmd(){
      
 		}
 
-    in_buffer_empty();
+    //in_buffer_empty();
 		if(strcmp(input,"pds")==0){
 			printDigitalStates();
 		}else if(strcmp(input,"pps") == 0){
@@ -325,5 +332,6 @@ void printAnalogStates(){
   }
   Serial.println(ret);
 }
+
 
 

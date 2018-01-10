@@ -11,7 +11,6 @@ C:\Users\LJiljana\AppData\Local\Temporary Projects\SmartHomeClient\obj\Debug\Sma
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.exe
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.xml
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.pdb
-C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.Form1.resources
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.Resources.resources
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.vbproj.GenerateResource.Cache
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\SmartHomeClient.exe
@@ -61,3 +60,7 @@ C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeCl
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.UI.GL.xml
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Emgu.CV.VideoStab.xml
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Res\Images\smart_iot.png
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.MainUI.resources
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.QRScanner.resources
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.SerialPortDialog.resources
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.DeviceManagerUI.resources

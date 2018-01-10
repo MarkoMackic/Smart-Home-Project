@@ -8,34 +8,57 @@ Imports System.Runtime.InteropServices
 Imports Emgu.CV.Face
 
 Public Class FaceRecognition
+    'EMGU components
     Private cap As Capture
     Private cc As New CascadeClassifier(Path.Combine(Application.StartupPath, "Res/Haarcascade/haarcascade_frontalface_default.xml"))
+    Private recognizer As LBPHFaceRecognizer = Nothing
 
+    'Hashtable for matching results from recognizer
     Private matches As Hashtable = New Hashtable()
 
+    'Data from DB
     Private tempDBData As Hashtable = New Hashtable()
     Private idx As Integer = 0
 
+    'Camera thread and its state
     Private thrCamera As Thread
     Private thrCameraRunning As Boolean
 
-
+    'Indicate is camera started
     Private cameraStarted As Boolean = False
 
+    'Bitmap of grayscale face image
     Private grayBitmap As Bitmap
 
-    Private recognizer As LBPHFaceRecognizer = Nothing
+    'Automated procedures (this form state)
+    Public state As Integer = 0
 
-    Public state As Integer = 0 ' if we want some automated procedure
-
+    'How many faces do we have in db
     Private differentFaces = 0
 
+    'Initial form width set in UI designer
+    Private expandedWidth As Integer
+
+    Private supressedWidth As Integer
+
+    'Form events
     Event faceRecognized(ByVal username As String)
 
+    'Delegates needed for camThread to communicate to UI
     Private Delegate Sub _fRecognized(ByVal text As String)
-    Private Delegate Sub SetTextDelegate(ByVal TheText As String)
-    Private Delegate Sub SetPicture(ByVal bmp As Bitmap)
+    Private Delegate Sub SetTextDelegate(ByVal text As String)
+
+
+    Public Sub New(Optional ByVal state As Integer = 0)
+
+        ' This call is required by the designer.
+        InitializeComponent()
+
+        ' Add any initialization after the InitializeComponent() call.
+        Me.state = state
+    End Sub
     Private Sub FaceRecognition_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
+        'Dipsose objects, and return to inital form
         Try
             thrCameraRunning = False
             thrCamera.Abort()
@@ -44,13 +67,14 @@ Public Class FaceRecognition
 
         stopCamera()
         Globals.faceRecognizer = Nothing
-        Form1.Show()
+        MainUI.Show()
 
     End Sub
 
 
     Private Sub FaceRecognition_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        'Load faces
+
+        'Get face data
         dbAdapter.openConnection()
         Dim reader As SqlCeDataReader = dbAdapter.GetData("SELECT * FROM faces ")
 
@@ -64,22 +88,29 @@ Public Class FaceRecognition
         While reader.Read()
             differentFaces += 1
         End While
+
+        reader.Close()
         dbAdapter.closeConnection()
 
-        'Set user bitmap
+        'Save inital needed UI properties
+        expandedWidth = Me.Width
+
+        'Set UI properties
         faceBox.Image = Bitmap.FromFile(Path.Combine(Application.StartupPath, "Res/FaceRecognition/user.png"))
-        grayBitmap = New Bitmap(facebox1.Width, facebox1.Height)
-        Dim g As Graphics = Graphics.FromImage(grayBitmap)
-        Using g
-            g.FillRectangle(Brushes.Black, New Rectangle(0, 0, grayBitmap.Width, grayBitmap.Height))
-        End Using
-
         txtUname.Enabled = False
+        Me.Width = txtUname.Right + btnPrev.Left + 10
 
+        supressedWidth = Me.Width
+
+        'Initalize needed objects 
+        grayBitmap = New Bitmap(facebox1.Width, facebox1.Height)
+
+
+        'Automated procedures
         Select Case state
             Case 1 'just recognize
                 recognizeFace()
-          
+
 
 
 
@@ -93,11 +124,16 @@ Public Class FaceRecognition
             Globals.faceRecognizer = Nothing
             Me.Close()
         End If
+        If Me.state <> 1 Then ' Thread is dependant on this
+            Me.state = 1
+        End If
+        'Try to train recognizer, set ui and start camera thread
         If trainRecognizer() Then
             btnNew.Enabled = False
             btnNext.Enabled = False
             btnPrev.Enabled = False
             saveBtn.Enabled = False
+            btnRecognize.Enabled = False
 
             Label2.Visible = True
             Label3.Visible = True
@@ -210,15 +246,20 @@ Public Class FaceRecognition
 
                 grayBitmap = bmp.Clone()
                 imageFrame.Draw(face, New Emgu.CV.Structure.Bgr(Color.BurlyWood), 2)
-                changeFacebox1(bmp)
             Else
-                changeFacebox1(grayBitmap)
+                Dim g As Graphics = Graphics.FromImage(grayBitmap)
+                Using g
+                    g.FillRectangle(Brushes.Black, New Rectangle(0, 0, grayBitmap.Width, grayBitmap.Height))
+                End Using
+
             End If
+            facebox1.Image = grayBitmap.Clone()
+            faceBox.Image = imageFrame.ToBitmap()
             If state = 1 Then
 
                 Dim res As EigenFaceRecognizer.PredictionResult = recognizer.Predict(New Image(Of [Structure].Gray, Byte)(grayBitmap).Resize(100, 100, CvEnum.Inter.Cubic))
                 changeDistance(res.Distance)
-               
+
                 If (res.Distance < 95) Then
                     If matches.ContainsKey(res.Label) And matches.Count = 1 Then
                         matches(res.Label) += 1
@@ -251,8 +292,6 @@ Public Class FaceRecognition
 
 
 
-            faceBox.Image = imageFrame.ToBitmap()
-
 
 
         End While
@@ -260,20 +299,19 @@ Public Class FaceRecognition
     Private Sub fRecognized(ByVal username As String)
         If InvokeRequired Then
             Invoke(New _fRecognized(AddressOf fRecognized), username)
+            Return
+
         End If
+        stopCamera()
         RaiseEvent faceRecognized(username)
-      
+
     End Sub
-    Private Sub changeFacebox1(ByVal bmp As Bitmap)
-        If InvokeRequired Then
-            Invoke(New SetPicture(AddressOf changeFacebox1), bmp)
-        End If
-        Me.facebox1.Image = bmp.Clone()
-    End Sub
+
     Private Sub changeText(ByVal text As String)
 
         If InvokeRequired Then
             Invoke(New SetTextDelegate(AddressOf changeText), text)
+            Return
         End If
         Me.txtUname.Text = text
     End Sub
@@ -282,17 +320,21 @@ Public Class FaceRecognition
 
         If InvokeRequired Then
             Invoke(New SetTextDelegate(AddressOf changeDistance), text)
+            Return
+
         End If
-        Me.Label2.Text = text
+        Me.Label2.Text = Int(text)
     End Sub
 
 
     Private Sub startCamera()
+        Me.Width = expandedWidth
         cap = New Capture(0)
         cameraStarted = True
     End Sub
 
     Private Sub stopCamera()
+        Me.Width = supressedWidth
         If cameraStarted = True Then
             cap.Stop()
             cap.Dispose()
@@ -323,11 +365,16 @@ Public Class FaceRecognition
     End Sub
 
     Private Sub btnNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnNew.Click
-        MsgBox("When you see rectangle around face you can click 'Save face' button")
+        MsgBox("When you see rectangle around face enter your username and can click 'Save face' button. " + vbNewLine + "If you have face in DB please enter same username")
         startCamera()
+
         btnNext.Enabled = False
         btnPrev.Enabled = False
+        btnNew.Enabled = False
+        btnRecognize.Enabled = False
+        saveBtn.Enabled = True
         txtUname.Enabled = True
+
         thrCamera = New Thread(AddressOf faceDetect)
         thrCamera.Start()
         thrCameraRunning = True
@@ -338,6 +385,16 @@ Public Class FaceRecognition
         If Not String.IsNullOrEmpty(txtUname.Text) Then
             insertFaceToDB(txtUname.Text, grayBitmap)
             tempDBData(tempDBData.Count) = New Object() {0, txtUname.Text, grayBitmap, getUserId(txtUname.Text)}
+            thrCameraRunning = False
+            stopCamera()
+
+            txtUname.Clear()
+            txtUname.Enabled = False
+            saveBtn.Enabled = False
+            btnPrev.Enabled = True
+            btnNext.Enabled = True
+            btnNew.Enabled = True
+            btnRecognize.Enabled = True
         Else
             MsgBox("Please enter a username")
         End If
@@ -345,15 +402,9 @@ Public Class FaceRecognition
 
     End Sub
 
-    Private Sub Label2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Label2.Click
 
-    End Sub
+    Private Sub btnRecognize_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnRecognize.Click
 
-    Private Sub faceBox_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles faceBox.Click
-
-    End Sub
-
-    Private Sub Label3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Label3.Click
-
+        recognizeFace()
     End Sub
 End Class
