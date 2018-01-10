@@ -28,15 +28,17 @@ Public Class MainUI
 
 
         'Initialize all the resources
-        If resLoaded = False Then
-            hardwareChannel = New HardwareComm(comport, 115200)
-            msgHandler = New MessageHandler()
-            dbAdapter = New DBDriver("Data Source = DB.sdf")
-            masterCont = New MasterController(MasterController.States.Login)
-            devManager = New DeviceManager()
+        'If resLoaded = False Then
+        '    hardwareChannel = New HardwareComm(comport, 115200)
+        '    msgHandler = New MessageHandler()
+        '    dbAdapter = New DBDriver("Data Source = DB.sdf")
+        '    masterCont = New MasterController(MasterController.States.Login)
+        '    devManager = New DeviceManager()
 
-            resLoaded = True
-        End If
+        '    resLoaded = True
+        'End If
+
+        Dim i As New Device("Aa", New Integer() {1}, 1)
 
 
     End Sub

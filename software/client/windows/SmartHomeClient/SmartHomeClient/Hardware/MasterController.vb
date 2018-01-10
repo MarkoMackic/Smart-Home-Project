@@ -17,6 +17,9 @@ Public Class MasterController
     Private GPSNextRun As Boolean = False
     Private GPSCount As Integer = 0
 
+    Public digitalPins, pwmPins, analogPins As String
+
+
     Sub New(Optional ByVal st As Integer = 1)
         If hardwareChannel.startCommunication() Then
             IsConnected = True
@@ -96,10 +99,19 @@ Public Class MasterController
     'Serial message handlers...
 
     Public Sub pinStateRecv(ByVal msg As String)
-        'Broadcast among Devices
-        devManager.updateDeviceStates(msg)
+      
         'We wait for 3 messages. And then again.
         GPSCount += 1
+
+        If msg.StartsWith("<pwm>") Then
+            pwmPins = msg
+        ElseIf msg.StartsWith("<ds>") Then
+            digitalPins = msg
+        ElseIf msg.StartsWith("<an>") Then
+            analogPins = msg
+        End If
+        'Broadcast among Devices
+        devManager.broadcastPinStates()
         If GPSCount = 3 Then
             GPSNextRun = True
             GPSCount = 0

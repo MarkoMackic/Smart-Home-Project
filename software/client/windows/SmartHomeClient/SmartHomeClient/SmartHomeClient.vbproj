@@ -147,7 +147,9 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Hardware\Device.vb" />
     <Compile Include="Hardware\DeviceManager.vb" />
+    <Compile Include="Hardware\Drivers\Driver.vb" />
     <Compile Include="Modules\CommonFunctions.vb" />
     <Compile Include="Database\DBDriver.vb" />
     <Compile Include="DBDataSet.Designer.vb">
@@ -161,7 +163,7 @@
     <Compile Include="DeviceManagerUI.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Drivers\DigitalDevice.vb" />
+    <Compile Include="Hardware\Drivers\DigitalDevice.vb" />
     <Compile Include="Modules\ErrorDescriptors.vb" />
     <Compile Include="Hardware\MasterController.vb" />
     <Compile Include="Camera\FaceRecognition.Designer.vb">
