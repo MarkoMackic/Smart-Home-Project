@@ -12,6 +12,7 @@ Public Class MasterController
 
     Public state As Integer
     Public IsConnected As Boolean = False
+    Public IsLoggedIn As Boolean = False
 
     Private GPSThread As Boolean = False
     Private GPSNextRun As Boolean = False
@@ -19,11 +20,14 @@ Public Class MasterController
 
     Public digitalPins, pwmPins, analogPins As String
 
+    Public Event LoggedIn()
+
 
     Sub New(Optional ByVal st As Integer = 1)
+        logInstantiation(Me)
         If hardwareChannel.startCommunication() Then
             IsConnected = True
-            mainForm.addLog("Connected to device")
+            mainForm.addLog("Connected to device .")
         End If
         hardwareChannel.sendData("lo")
         Me.state = st
@@ -31,6 +35,7 @@ Public Class MasterController
             Case States.Login
                 DeviceLogin(authmessage)
         End Select
+
     End Sub
 
     Public Sub DeviceLogin(ByVal authmessage As String)
@@ -38,11 +43,12 @@ Public Class MasterController
         hardwareChannel.sendData(authmessage, True, Me)
     End Sub
 
-    Public Sub SendData(ByVal data As String, Optional ByVal waitForData As Boolean = False, Optional ByVal caller As Object = Nothing)
+    Public Sub SendData(ByVal data As String, Optional ByVal waitForData As Boolean = False, Optional ByVal caller As Object = Nothing, Optional ByVal callback As String = "SerialDataRecieved")
         'Interface to hardwareChannel 
 
-        If IsConnected Then
-            hardwareChannel.sendData(data, waitForData, caller)
+        If IsConnected And IsLoggedIn Then
+            mainForm.addLog("Sending data to controller : " + data)
+            hardwareChannel.sendData(data, waitForData, caller, callback)
         End If
     End Sub
 
@@ -63,7 +69,10 @@ Public Class MasterController
         Select Case data
             Case "OK"
                 state = States.NormOp
+                IsLoggedIn = True
                 mainForm.addLog("Logged in to device")
+                'Raise event, so procedures can go on
+                RaiseEvent LoggedIn()
                 'Start listening for pin states
                 Dim thr As New Threading.Thread(AddressOf GetPinStates)
                 GPSThread = True
@@ -90,6 +99,7 @@ Public Class MasterController
             Case States.Login
                 LoginDataArrived(data)
             Case States.NormOp
+                'this will be unused most the time
                 Debug.Write(data)
 
         End Select

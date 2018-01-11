@@ -21,7 +21,7 @@ Public Class HardwareComm
         waiterEnqueuer = New Queue
         msg = ""
         AddHandler comPort.DataReceived, AddressOf dataRecieved
-
+        logInstantiation(Me)
     End Sub
 
     Public Function startCommunication()
@@ -63,7 +63,7 @@ Public Class HardwareComm
             If waitForData = True Then
 
                 If (caller IsNot Nothing) Then
-                    waiterEnqueuer.Enqueue(New Object() {caller, callback})
+                    waiterEnqueuer.Enqueue(New Object() {caller, callback, cmd})
                 Else
                     Throw New Exception("This is not allowed")
                 End If
@@ -101,12 +101,23 @@ Public Class HardwareComm
                             Dim tempDeq() As Object = waiterEnqueuer.Dequeue()
                             Dim waiter As Object = tempDeq(0)
                             Dim callback As String = CType(tempDeq(1), String)
+                            Dim cmd As String = CType(tempDeq(2), String)
+
                             'MsgBox(tempDeq(1))
                             Dim callback_msg As String = i.Trim()
                             Dim task As New Task(Sub()
 
                                                      Dim magicMethod As MethodInfo = waiter.GetType().GetMethod(callback)
-                                                     magicMethod.Invoke(waiter, New Object() {callback_msg})
+
+                                                     If Not magicMethod Is Nothing Then
+                                                         If (magicMethod.GetParameters().Count > 1) Then
+                                                             magicMethod.Invoke(waiter, New Object() {callback_msg, cmd})
+                                                         Else
+                                                             magicMethod.Invoke(waiter, New Object() {callback_msg})
+                                                         End If
+
+                                                     End If
+
                                                  End Sub)
 
                             task.Start()

@@ -147,9 +147,14 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\DriverCreationException.vb" />
+    <Compile Include="Exceptions\DeviceNotInitializedException.vb" />
+    <Compile Include="Exceptions\DriverNotFoundException.vb" />
     <Compile Include="Hardware\Device.vb" />
     <Compile Include="Hardware\DeviceManager.vb" />
     <Compile Include="Hardware\Drivers\Driver.vb" />
+    <Compile Include="Hardware\Drivers\IDriver.vb" />
+    <Compile Include="Hardware\ProtocolSpecification.vb" />
     <Compile Include="Modules\CommonFunctions.vb" />
     <Compile Include="Database\DBDriver.vb" />
     <Compile Include="DBDataSet.Designer.vb">
@@ -163,7 +168,7 @@
     <Compile Include="DeviceManagerUI.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Hardware\Drivers\DigitalDevice.vb" />
+    <Compile Include="Hardware\Drivers\DigitalDeviceDriver.vb" />
     <Compile Include="Modules\ErrorDescriptors.vb" />
     <Compile Include="Hardware\MasterController.vb" />
     <Compile Include="Camera\FaceRecognition.Designer.vb">

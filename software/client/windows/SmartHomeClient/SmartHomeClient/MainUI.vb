@@ -28,25 +28,26 @@ Public Class MainUI
 
 
         'Initialize all the resources
-        'If resLoaded = False Then
-        '    hardwareChannel = New HardwareComm(comport, 115200)
-        '    msgHandler = New MessageHandler()
-        '    dbAdapter = New DBDriver("Data Source = DB.sdf")
-        '    masterCont = New MasterController(MasterController.States.Login)
-        '    devManager = New DeviceManager()
-
-        '    resLoaded = True
-        'End If
-
-        Dim i As New Device("Aa", New Integer() {1}, 1)
-
+        If resLoaded = False Then
+            hardwareChannel = New HardwareComm(comport, 115200)
+            msgHandler = New MessageHandler()
+            dbAdapter = New DBDriver("Data Source = DB.sdf")
+            masterCont = New MasterController(MasterController.States.Login)
+            AddHandler masterCont.LoggedIn, AddressOf continueInitialization
+       
+        End If
+ 
+        logInstantiation(Me)
 
     End Sub
 
+    Private Sub continueInitialization()
 
+        devManager = New DeviceManager()
+        devManager.addDevice("Marko", New Integer() {13}, 1)
 
-
-
+        resLoaded = True
+    End Sub
 
 
     Public Sub SerialDataRecieved(ByVal msg As String)
@@ -79,8 +80,9 @@ Public Class MainUI
     End Sub
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
+        Dim dev As Device = devManager.GetDevice(0)
+        dev.UpdateState(state1)
 
-        masterCont.SendData("dw:13:" + state1.ToString(), True, Me)
         If state1 = 0 Then
             state1 = 1
         Else
