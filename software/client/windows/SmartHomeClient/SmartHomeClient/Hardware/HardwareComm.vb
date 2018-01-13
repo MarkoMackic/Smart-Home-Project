@@ -8,9 +8,11 @@ Imports System.Threading.Tasks
 Public Class HardwareComm
     Private comPort As SerialPort
     Private msg As String
-    Private waiterEnqueuer As Queue
+    Public waiters As LinkedList(Of Object)
+    Private waitersTimeout As Integer = 100 ' milliseconds
     Private recievingThr As Thread
     Private recievingThrRunning As Boolean = False
+    Public lockObject As New Object
 
     Public Sub New(ByVal comName As String, ByVal baudRate As Integer)
         comPort = New SerialPort(comName, baudRate)
@@ -18,7 +20,7 @@ Public Class HardwareComm
         comPort.Parity = Parity.None
         comPort.StopBits = 1
 
-        waiterEnqueuer = New Queue
+        waiters = New LinkedList(Of Object)
         msg = ""
         AddHandler comPort.DataReceived, AddressOf dataRecieved
         logInstantiation(Me)
@@ -63,7 +65,10 @@ Public Class HardwareComm
             If waitForData = True Then
 
                 If (caller IsNot Nothing) Then
-                    waiterEnqueuer.Enqueue(New Object() {caller, callback, cmd})
+                    SyncLock lockObject
+                        waiters.AddLast(New Object() {caller, callback, cmd, Now})
+                    End SyncLock
+
                 Else
                     Throw New Exception("This is not allowed")
                 End If
@@ -76,14 +81,28 @@ Public Class HardwareComm
             Return False
         End If
     End Function
+    Private Sub CleanUpTimedOutWaiters()
+        Dim Count As Integer = 0
+        SyncLock lockObject
+            For i As Integer = waiters.Count - 1 To 0 Step -1
+                Dim d As DateTime = waiters.ElementAt(i)(3)
+                If Now.Subtract(d).TotalMilliseconds > waitersTimeout Then
+                    waiters.Remove(waiters.ElementAt(i))
+                End If
+            Next
+        End SyncLock
+    
 
+    End Sub
     Private Sub processRecievedData()
         'If Not String.IsNullOrEmpty(trimSpaces(msg)) Then
         '    MsgBox(msg)
         '    MsgBox(msg.Contains(Chr(10)))
         'End If
         While recievingThrRunning
+            'Maybe here to do cleanup of timed of waiters ? 
 
+            CleanUpTimedOutWaiters()
             If msg.Contains(Chr(10)) Then
                 Dim temp() As String = msg.Split(New Char() {Chr(10)})
                 Dim idx As Integer = 0
@@ -94,11 +113,12 @@ Public Class HardwareComm
 
                         msg = msg.Substring(msg.IndexOf(Chr(10)) + 1)
 
-                        If waiterEnqueuer.Count > 0 Then
+                        If waiters.Count > 0 Then
 
 
 
-                            Dim tempDeq() As Object = waiterEnqueuer.Dequeue()
+                            Dim tempDeq() As Object = waiters.First().Value
+                            waiters.RemoveFirst()
                             Dim waiter As Object = tempDeq(0)
                             Dim callback As String = CType(tempDeq(1), String)
                             Dim cmd As String = CType(tempDeq(2), String)
@@ -144,5 +164,7 @@ Public Class HardwareComm
         msg += trimSpaces(tempData)
 
     End Sub
+
+
 
 End Class

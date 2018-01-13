@@ -6,16 +6,16 @@ Namespace Drivers
 
     Public Class DigitalDeviceDriver
         Inherits Drivers.Driver
-        Implements Drivers.IDriver
+
         Private pin As Integer
+        Private deviceName As String
 
-
-        Public Sub New(ByVal pins As List(Of Integer))
+        Public Sub New(ByVal pins As List(Of Integer), ByVal devName As String)
             If pins.Count <> 1 Then
                 Throw New DriverCreationException("There should be only one pin")
             End If
             pin = pins(0)
-
+            deviceName = devName
             masterCont.SendData(String.Format(setPinMode, pin, 1), True, Me)
         End Sub
 
@@ -26,18 +26,22 @@ Namespace Drivers
             End If
             Return False
         End Function
-        Public Sub SerialDataRecieved(ByVal data As String, ByVal cmd As String) Implements IDriver.SerialDataRecieved
-            MsgBox("Driver1 : " + data + ":" + cmd)
+
+        Public Overrides Sub SerialDataRecieved(ByVal data As String, ByVal cmd As String)
+            mainForm.addLog(deviceName + "_driver : " + data)
+
         End Sub
 
-        Public Sub UpdateStateCallback(ByVal data As String, ByVal cmd As String) Implements IDriver.UpdateStateCallback
+        Public Overrides Sub ChangeStateCallback(ByVal data As String, ByVal cmd As String)
             If data <> "OK" Then
                 mainForm.addLog("Didn't change device state")
+            Else
+
             End If
         End Sub
-        Public Function UpdateState(ByVal state As String) Implements IDriver.UpdateState
+        Public Overrides Function ChangeState(ByVal state As String)
             If state = "1" Or state = "0" Then
-                masterCont.SendData(String.Format(writeDigitalState, pin, state), True, Me, "UpdateStateCallback")
+                masterCont.SendData(String.Format(writeDigitalState, pin, state), True, Me, "ChangeStateCallback")
                 Return True
             Else
                 Return False

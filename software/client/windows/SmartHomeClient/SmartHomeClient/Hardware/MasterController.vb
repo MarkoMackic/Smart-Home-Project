@@ -17,8 +17,12 @@ Public Class MasterController
     Private GPSThread As Boolean = False
     Private GPSNextRun As Boolean = False
     Private GPSCount As Integer = 0
-
+    Private GPSTimeout As Timeout
+    Public GPSTime As Integer
     Public digitalPins, pwmPins, analogPins As String
+
+    Private timeSent As DateTime
+
 
     Public Event LoggedIn()
 
@@ -35,6 +39,7 @@ Public Class MasterController
             Case States.Login
                 DeviceLogin(authmessage)
         End Select
+        GPSTimeout = New Timeout(300) 'give it 300 milliseconds to get to itself
 
     End Sub
 
@@ -54,14 +59,24 @@ Public Class MasterController
 
     Public Sub GetPinStates()
         While GPSThread
+  
             If GPSNextRun Then
-
+                GPSTimeout.UpdateTime()
+                timeSent = Now
                 hardwareChannel.sendData("pds", True, Me, "pinStateRecv")
                 hardwareChannel.sendData("pps", True, Me, "pinStateRecv")
                 hardwareChannel.sendData("pas", True, Me, "pinStateRecv")
 
                 GPSNextRun = False
+            Else
+                If GPSTimeout.IsElapsed() Then
+                    GPSCount = 0
+                    GPSNextRun = True
+                    mainForm.addLog("Error in communication")
+
+                End If
             End If
+
         End While
     End Sub
 
@@ -119,7 +134,10 @@ Public Class MasterController
             digitalPins = msg
         ElseIf msg.StartsWith("<an>") Then
             analogPins = msg
+            GPSTime = Now.Subtract(timeSent).TotalMilliseconds
+
         End If
+   
         'Broadcast among Devices
         devManager.broadcastPinStates()
         If GPSCount = 3 Then

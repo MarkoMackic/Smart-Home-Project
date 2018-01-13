@@ -34,7 +34,7 @@ Public Class MainUI
             dbAdapter = New DBDriver("Data Source = DB.sdf")
             masterCont = New MasterController(MasterController.States.Login)
             AddHandler masterCont.LoggedIn, AddressOf continueInitialization
-       
+
         End If
  
         logInstantiation(Me)
@@ -45,6 +45,7 @@ Public Class MainUI
 
         devManager = New DeviceManager()
         devManager.addDevice("Marko", New Integer() {13}, 1)
+        devManager.addDevice("adasd", New Integer() {13}, 1)
 
         resLoaded = True
     End Sub
@@ -81,13 +82,17 @@ Public Class MainUI
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
         Dim dev As Device = devManager.GetDevice(0)
-        dev.UpdateState(state1)
+        dev.ChangeState(state1)
 
         If state1 = 0 Then
             state1 = 1
         Else
             state1 = 0
         End If
+
+    End Sub
+
+    Private Sub Panel2_Paint(ByVal sender As System.Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles Panel2.Paint
 
     End Sub
 End Class

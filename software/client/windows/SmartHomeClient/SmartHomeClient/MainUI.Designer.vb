@@ -26,12 +26,12 @@ Partial Class MainUI
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.Panel2 = New System.Windows.Forms.Panel()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.txtLog = New System.Windows.Forms.TextBox()
-        Me.Button1 = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
+        Me.Button1 = New System.Windows.Forms.Button()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.txtLog = New System.Windows.Forms.TextBox()
+        Me.Label2 = New System.Windows.Forms.Label()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.Panel1.SuspendLayout()
@@ -81,16 +81,23 @@ Partial Class MainUI
         Me.Panel1.Size = New System.Drawing.Size(503, 368)
         Me.Panel1.TabIndex = 0
         '
-        'Panel2
+        'Button2
         '
-        Me.Panel2.BackColor = System.Drawing.Color.PeachPuff
-        Me.Panel2.Controls.Add(Me.txtLog)
-        Me.Panel2.Controls.Add(Me.Label2)
-        Me.Panel2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Panel2.Location = New System.Drawing.Point(532, 3)
-        Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(503, 368)
-        Me.Panel2.TabIndex = 1
+        Me.Button2.Location = New System.Drawing.Point(266, 80)
+        Me.Button2.Name = "Button2"
+        Me.Button2.Size = New System.Drawing.Size(163, 23)
+        Me.Button2.TabIndex = 2
+        Me.Button2.Text = "Change 13"
+        Me.Button2.UseVisualStyleBackColor = True
+        '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(24, 80)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(163, 23)
+        Me.Button1.TabIndex = 1
+        Me.Button1.Text = "Face recognizer"
+        Me.Button1.UseVisualStyleBackColor = True
         '
         'Label1
         '
@@ -102,15 +109,16 @@ Partial Class MainUI
         Me.Label1.TabIndex = 0
         Me.Label1.Text = "Control Panel"
         '
-        'Label2
+        'Panel2
         '
-        Me.Label2.Anchor = System.Windows.Forms.AnchorStyles.Top
-        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
-        Me.Label2.Location = New System.Drawing.Point(196, 23)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(111, 18)
-        Me.Label2.TabIndex = 1
-        Me.Label2.Text = "House Log :"
+        Me.Panel2.BackColor = System.Drawing.Color.PeachPuff
+        Me.Panel2.Controls.Add(Me.txtLog)
+        Me.Panel2.Controls.Add(Me.Label2)
+        Me.Panel2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Panel2.Location = New System.Drawing.Point(532, 3)
+        Me.Panel2.Name = "Panel2"
+        Me.Panel2.Size = New System.Drawing.Size(503, 368)
+        Me.Panel2.TabIndex = 1
         '
         'txtLog
         '
@@ -124,23 +132,15 @@ Partial Class MainUI
         Me.txtLog.Size = New System.Drawing.Size(448, 264)
         Me.txtLog.TabIndex = 2
         '
-        'Button1
+        'Label2
         '
-        Me.Button1.Location = New System.Drawing.Point(24, 80)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(163, 23)
-        Me.Button1.TabIndex = 1
-        Me.Button1.Text = "Face recognizer"
-        Me.Button1.UseVisualStyleBackColor = True
-        '
-        'Button2
-        '
-        Me.Button2.Location = New System.Drawing.Point(266, 80)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(163, 23)
-        Me.Button2.TabIndex = 2
-        Me.Button2.Text = "Change 13"
-        Me.Button2.UseVisualStyleBackColor = True
+        Me.Label2.Anchor = System.Windows.Forms.AnchorStyles.Top
+        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
+        Me.Label2.Location = New System.Drawing.Point(196, 23)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(111, 18)
+        Me.Label2.TabIndex = 1
+        Me.Label2.Text = "House Log :"
         '
         'MainUI
         '

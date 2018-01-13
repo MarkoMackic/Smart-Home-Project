@@ -1,0 +1,380 @@
+/*
+ * Command set : 
+ * 
+ * *** General ***
+ *  dw:pin:state -> digitalWrite
+ *  aw:pin:state -> analogWrite to PWM
+ *  pm:pin:mode -> pinMode
+ *  pps -> printPwmStates <pwm>pin:value;pin:value;....</pwm>
+ *  pds -> printDigitalStates <ds>pin:state;pin:state;...</ds>
+ *  pas -> printAnalogStates <as> pin:value;pin:value;....</as>
+ *  
+ *  *** Servo ***
+ *  as:pin -> attachServo
+ *  ds:pin -> detachServo
+ *  sp:pin:pos -> Servo.write(pos) -> pin
+ *  
+ *  *** TLC5940 ***
+ *  tl59i:num_tlcs -> TLC.init()
+ *  tl59c -> Tlc.clear()
+ *  tl59s:pin:value -> Tlc.set(pin,value)
+ *  tl59u -> Tlc.update()
+ * 
+ */
+
+#include <Servo.h>
+#include <Tlc5940.h>
+#include "drivers/servo/servo.h"
+
+/*Serial*/
+#define max_cmd_size 60
+
+const char ok_msg[] = "OK";
+const char err_msg[] = "ERROR";
+
+boolean vertified = 0;
+char input[max_cmd_size];
+byte index = 0;
+const char authMsg[] = "authmessage";
+char tempC; 
+char ret[300];
+char buf[4];
+byte cmd_indexer = 0;
+
+/*General*/
+const byte analogPins[] = {A0,A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15};
+const byte pwmPins[] =    {2,3,4,5,6,7,8,9,10,11,12,13,44,45,46};
+byte pwmValues[] =  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+
+/*TLC5940*/
+ byte numTlcs = 0;
+
+void setup(){
+	for(byte i=0;i<54;i++){
+		pinMode(i,INPUT);
+    //digitalWrite(i,0);
+	}
+	Serial.begin(115200);
+  Serial.flush();
+
+  in_buffer_empty();
+	getAuth();
+}
+
+void loop(){
+	if(vertified){
+		//Now we're ok 
+    if(Serial.available()){
+		getCmd();
+    }
+	}else{
+		//Reg again
+		getAuth();
+	}
+}
+//bufferempty
+void in_buffer_empty(){
+  while(Serial.available())
+    Serial.read();
+}
+//auth program with house
+void getAuth(){
+  in_buffer_empty();
+	while(!Serial.available());
+	for( int i = 0; i < sizeof(input);  i++ )
+   		input[i] = (char)0;
+	index = 0;
+	tempC = (char)Serial.read();
+  
+	while(!(tempC == '\n' || tempC == '\r')){
+     
+        input[index] = tempC;
+        while(!Serial.available());
+        tempC = (char)Serial.read();
+        index++;
+     
+ }
+ 
+  in_buffer_empty();
+	if(strcmp(input,authMsg) == 0){
+		Serial.println(ok_msg);
+		vertified = 1;
+	}else if(strcmp(input,"lo")==0){
+		vertified = 0;
+	}else{
+		Serial.println(err_msg);
+		vertified=0;
+	}
+
+}
+
+
+//interpret the command from pc
+void getCmd(){
+  //in_buffer_empty();
+  //in_buffer_empty();
+  
+  
+	
+		for( int i = 0; i < sizeof(input);  i++ )
+   			input[i] = (char)0;
+		index = 0;
+		tempC = (char)Serial.read();
+		while(!(tempC == '\n' || tempC == '\r')){
+    
+			  input[index] = tempC;
+        while(!Serial.available());
+			  tempC = (char)Serial.read();
+			  index++;
+     
+		}
+
+		if(strcmp(input,"pds")==0){
+			printDigitalStates();
+		}else if(strcmp(input,"pps") == 0){
+			printPwmStates();
+		}else if(strcmp(input,"pas") == 0){
+			printAnalogStates();
+		}else if(strcmp(input,"lo") == 0){
+			vertified = 0;
+		}else{ 
+			char *pch;
+			cmd_indexer	 = 0;
+			char cmd_array[4][10]={{0}};
+			pch	= strtok(input,":");
+			strcpy(cmd_array[cmd_indexer],pch);
+			while(cmd_indexer<3){
+				cmd_indexer++;
+				pch = strtok(0,":");
+				if(pch != 0){
+					strcpy(cmd_array[cmd_indexer],pch);
+				}else{
+					strcpy(cmd_array[cmd_indexer],"");
+				}
+			}
+
+      bool isHandled = false;
+      
+			//parser end
+			if(strcmp(cmd_array[0],"dw") == 0){
+				byte pin = atoi(cmd_array[1]);
+				bool state = atoi(cmd_array[2]);
+        if(state == 1 || state == 0){
+				  digitalWrite(pin,state);
+          //update pwm state of the pin 
+          for(byte i=0;i<sizeof(pwmPins);i++){
+           if(pwmPins[i] == pin){
+              pwmValues[i] = state * 255;
+           }
+          }
+          Serial.println(ok_msg);
+         }
+				
+			}else if(strcmp(cmd_array[0],"as") == 0){
+        byte pin = atoi(cmd_array[1]);
+        //check if the pin is used
+        for(byte i=0;i<max_servos;i++){
+          if(servoPins[i] == pin){
+            Serial.println(err_msg);
+            return;
+          }
+        }
+        //check for available servo
+			  boolean servoFound = false;
+        for(int i=0;i<max_servos;i++){
+          if(servos[i].attached() == false){
+            servos[i].attach(pin);
+            servoPins[i] = pin;
+            servoFound = true;
+            break;
+          }
+        }
+        if(servoFound){
+          Serial.println(ok_msg);
+        }else{
+          Serial.println(err_msg);
+        }
+        
+			  
+			}else if(strcmp(cmd_array[0],"ds") == 0){
+        //check if there's a servo that's attached to pin, and detach it
+       byte pin = atoi(cmd_array[1]);
+       boolean servoFound = false;
+    
+       for(byte i=0;i<max_servos;i++){
+          if(servos[i].attached() == true && servoPins[i] == pin){
+            servos[i].detach();
+            servoPins[i] = 0;
+            servoFound = true;
+            break;
+          }
+        }
+        if(servoFound){
+          Serial.println(ok_msg);
+        }else{
+          Serial.println(err_msg);
+        }
+        
+        
+      }else if(strcmp(cmd_array[0],"sp") == 0){
+        //check if there's a servo that's attached to pin, and write position to it
+        byte pin = atoi(cmd_array[1]);
+        byte pos = atoi(cmd_array[2]);
+        boolean servoFound = false;
+        for(byte i=0;i<max_servos;i++){
+          if(servos[i].attached() == true && servoPins[i] == pin){
+            servos[i].write(pos);
+            servoFound = true;
+            break;
+          }
+        }
+        if(servoFound){
+          Serial.println(ok_msg);
+        }else{
+          Serial.println(err_msg);
+        }
+        
+        
+      }else if(strcmp(cmd_array[0],"pm") == 0){
+			
+			  byte pin = atoi(cmd_array[1]);
+        bool state = atoi(cmd_array[2]);
+        pinMode(pin, state);
+        Serial.println(ok_msg);
+		  }else if(strcmp(cmd_array[0],"aw")==0){
+				byte pin = atoi(cmd_array[1]);
+				byte state = atoi(cmd_array[2]);
+				bool statechanged = 0;
+				for(byte i=0;i<sizeof(pwmPins);i++){
+					if(pin==pwmPins[i]){
+						analogWrite(pin,state);
+						pwmValues[i]=state;
+						Serial.println(ok_msg);
+						statechanged = 1;
+					}
+				}
+				if(!statechanged){
+					Serial.println(err_msg);
+				}
+			}else if(strcmp(cmd_array[0],"tl59i") == 0 ){
+			  numTlcs = atoi(cmd_array[1]);
+        if(numTlcs < MAX_TLCS && numTlcs > 0){
+          Tlc.init(numTlcs);
+          Serial.println(ok_msg);
+        }else{
+          Serial.println(err_msg);
+        }
+			}else if(strcmp(cmd_array[0],"tl59c") == 0 ){
+       if(numTlcs > 0){
+          Tlc.clear();
+          Serial.println(ok_msg);
+       }else{
+          Serial.println(err_msg);
+       }
+      }else if(strcmp(cmd_array[0],"tl59u") == 0 ){
+       if(numTlcs > 0){
+          Tlc.update();
+          Serial.println(ok_msg);
+       }else{
+          Serial.println(err_msg);
+       }
+      }else if(strcmp(cmd_array[0],"tl59s") == 0 ){
+       if(numTlcs > 0){
+          int pin = atoi(cmd_array[1]);
+          int value = atoi(cmd_array[2]);
+          if(pin < numTlcs * 16 && value > -1 && value < 4096){
+            Tlc.set(pin,value);
+            Serial.println(ok_msg);
+          }else{
+            Serial.println(err_msg);
+          }
+       }
+      }else{
+				Serial.println("CMDERROR");
+			}
+
+		}
+	
+}
+
+
+
+bool digitalReadOutputPin(uint8_t pin)
+{
+ uint8_t bit = digitalPinToBitMask(pin);
+ uint8_t port = digitalPinToPort(pin);
+ if (port == NOT_A_PIN) 
+   return LOW;
+
+ return (*portOutputRegister(port) & bit) ? HIGH : LOW;
+}
+//states of digital pins
+void printDigitalStates(){
+  strcpy(ret,"<ds>");
+  for(byte i=2;i<54;i++){
+    if(i!=53){    
+      snprintf(buf, sizeof(buf), "%i", i);
+      strcat(ret,buf);
+      strcat(ret,":");
+      snprintf(buf, sizeof(buf), "%i", digitalReadOutputPin(i));
+      strcat(ret,buf);
+      strcat(ret,",");    
+    }else{
+      snprintf(buf, sizeof(buf), "%i", i);
+      strcat(ret,buf);
+      strcat(ret,":");
+      snprintf(buf, sizeof(buf), "%i", digitalReadOutputPin(i));
+      strcat(ret,buf);
+      strcat(ret,"</ds>");
+    }
+  }
+  Serial.println(ret);
+}
+//states on pwm pins
+void printPwmStates(){
+  strcpy(ret,"<pwm>");
+  for(byte i=0;i<sizeof(pwmPins);i++){
+    if(i!=sizeof(pwmPins)-1){
+      snprintf(buf, sizeof(buf), "%d", pwmPins[i]);
+        strcat(ret,buf);
+        strcat(ret,":");
+        snprintf(buf, sizeof(buf), "%d", pwmValues[i]);
+        strcat(ret,buf);
+        strcat(ret,",");
+    }else{
+        snprintf(buf, sizeof(buf), "%d", pwmPins[i]);
+        strcat(ret,buf);
+        strcat(ret,":");
+        snprintf(buf, sizeof(buf), "%d", pwmValues[i]);
+        strcat(ret,buf);
+        strcat(ret,"</pwm>");
+    }
+  }
+  Serial.println(ret);
+}
+//states on analog pins
+void printAnalogStates(){
+  strcpy(ret,"<an>");
+  for(byte i=0;i<sizeof(analogPins);i++){
+    if(i!=sizeof(analogPins)-1){
+      snprintf(buf,sizeof(buf),"%d",analogPins[i]);
+      strcat(ret,buf);
+      strcat(ret,":");
+      snprintf(buf,sizeof(buf),"%d",analogRead(analogPins[i]));
+      strcat(ret,buf);
+      strcat(ret,",");
+    }else{
+      snprintf(buf,sizeof(buf),"%d",analogPins[i]);
+      strcat(ret,buf);
+      strcat(ret,":");
+      snprintf(buf,sizeof(buf),"%d",analogRead(analogPins[i]));
+      strcat(ret,buf);
+      strcat(ret,"</an>");
+    }
+    delayMicroseconds(500);
+  }
+  Serial.println(ret);
+}
+
+

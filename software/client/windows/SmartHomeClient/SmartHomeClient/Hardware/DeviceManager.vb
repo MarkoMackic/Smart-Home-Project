@@ -4,7 +4,7 @@ Imports SmartHomeClient.Globals
 Public Class DeviceManager
     Private devices As List(Of Device)
     Private UI As DeviceManagerUI
-
+    Private pinsHashTable As New Hashtable()
     Private isInitialized = False
 
     Public Sub New()
@@ -13,17 +13,54 @@ Public Class DeviceManager
         logInstantiation(Me)
     End Sub
 
+    Private Function pinConflicts(ByVal devMaster As Integer, ByVal devPins() As Integer)
+       
+            If pinsHashTable.ContainsKey(devMaster) Then
+                If CType(pinsHashTable(devMaster), List(Of Integer)).Any(Function(pin) devPins.Contains(pin)) Then
+                    Return True 'conflict exists
+                Else
+                    pinsHashTable(devMaster) = CType(pinsHashTable(devManager), List(Of Integer)).Concat(devPins)
+                    Return False
+                End If
+            Else
+                pinsHashTable(devMaster) = devPins.ToList()
+                Return False
+            End If
 
-    Public Sub addDevice(ByVal devName As String, ByVal devPins() As Integer, ByVal devType As Integer)
+    End Function
+
+    Public Function addDevice(ByVal devName As String,
+                         ByVal devPins() As Integer,
+                         ByVal devType As Integer,
+                         Optional ByVal devMasterId As Integer = -1,
+                         Optional ByVal devAddress As String = Nothing)
+
+        Dim devMaster As Device = Nothing
+        If devMasterId <> -1 Then
+            For Each dev As Device In Me.devices
+                If dev.ID = devMasterId Then
+                    devMaster = dev
+                    Exit For
+                End If
+            Next
+        End If
+
+        If pinConflicts(devMasterId, devPins) Then
+            mainForm.addLog(String.Format("Device {0} can't be instantiated because there is pin conflicts with one of the previously instantiated devices", devName))
+            Return False
+        End If
+
+
         Try
-            Dim dev As Device = New Device(devName, devPins, devType)
+            Dim dev As Device = New Device(devName, devPins, devType, devMaster, devAddress)
             devices.Add(dev)
+            Return True
         Catch ex As DriverNotFoundException
             mainForm.addLog("No driver found for : " + devName)
+            Return False
         End Try
 
-
-    End Sub
+    End Function
 
     Public Sub attachUI(ByVal UI As DeviceManagerUI)
         Me.UI = UI

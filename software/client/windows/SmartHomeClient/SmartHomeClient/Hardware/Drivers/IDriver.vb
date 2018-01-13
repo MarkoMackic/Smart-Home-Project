@@ -3,8 +3,11 @@
 
 
         Sub SerialDataRecieved(ByVal data As String, ByVal cmd As String)
+        Function ChangeState(ByVal state As String)
         Function UpdateState(ByVal state As String)
-        Sub UpdateStateCallback(ByVal data As String, ByVal cmd As String)
+
+        'Serial callbacks
+        Sub ChangeStateCallback(ByVal data As String, ByVal cmd As String)
 
     End Interface
 

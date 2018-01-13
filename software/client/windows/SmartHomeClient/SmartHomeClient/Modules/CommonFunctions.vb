@@ -14,5 +14,8 @@ Module CommonFunctions
         MainUI.Close()
     End Sub
 
+    Public Sub DriverLog(ByVal msg As String)
+
+    End Sub
 
 End Module
