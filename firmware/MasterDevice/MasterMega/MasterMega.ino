@@ -47,7 +47,7 @@ byte cmd_indexer = 0;
 
 
 void setup() {
-  for (byte i = 0; i < 54; i++) {
+  for (byte i = 2; i < 54; i++) {
     pinMode(i, INPUT);
     //digitalWrite(i,0);
   }

@@ -19,7 +19,7 @@ Public Class DeviceManager
                 If CType(pinsHashTable(devMaster), List(Of Integer)).Any(Function(pin) devPins.Contains(pin)) Then
                     Return True 'conflict exists
                 Else
-                    pinsHashTable(devMaster) = CType(pinsHashTable(devManager), List(Of Integer)).Concat(devPins)
+                pinsHashTable(devMaster) = CType(pinsHashTable(devMaster), List(Of Integer)).Concat(devPins)
                     Return False
                 End If
             Else
@@ -32,14 +32,19 @@ Public Class DeviceManager
     Public Function addDevice(ByVal devName As String,
                          ByVal devPins() As Integer,
                          ByVal devType As Integer,
+                         ByVal devId As Integer,
                          Optional ByVal devMasterId As Integer = -1,
                          Optional ByVal devAddress As String = Nothing)
 
+
         Dim devMaster As Device = Nothing
         If devMasterId <> -1 Then
+
             For Each dev As Device In Me.devices
+
                 If dev.ID = devMasterId Then
                     devMaster = dev
+
                     Exit For
                 End If
             Next
@@ -52,11 +57,14 @@ Public Class DeviceManager
 
 
         Try
-            Dim dev As Device = New Device(devName, devPins, devType, devMaster, devAddress)
+            Dim dev As Device = New Device(devName, devPins, devType, devId, devMaster, devAddress)
             devices.Add(dev)
             Return True
         Catch ex As DriverNotFoundException
             mainForm.addLog("No driver found for : " + devName)
+            Return False
+        Catch ex As Exception
+            mainForm.addLog(ex.Message)
             Return False
         End Try
 

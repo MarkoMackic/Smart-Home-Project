@@ -81,19 +81,23 @@ Public Class HardwareComm
             Return False
         End If
     End Function
-    Private Sub CleanUpTimedOutWaiters()
+    Public Sub CleanUpTimedOutWaiters()
+
         Dim Count As Integer = 0
         SyncLock lockObject
             For i As Integer = waiters.Count - 1 To 0 Step -1
+
                 Dim d As DateTime = waiters.ElementAt(i)(3)
                 If Now.Subtract(d).TotalMilliseconds > waitersTimeout Then
                     waiters.Remove(waiters.ElementAt(i))
                 End If
+
             Next
         End SyncLock
-    
+
 
     End Sub
+
     Private Sub processRecievedData()
         'If Not String.IsNullOrEmpty(trimSpaces(msg)) Then
         '    MsgBox(msg)
@@ -102,7 +106,7 @@ Public Class HardwareComm
         While recievingThrRunning
             'Maybe here to do cleanup of timed of waiters ? 
 
-            CleanUpTimedOutWaiters()
+
             If msg.Contains(Chr(10)) Then
                 Dim temp() As String = msg.Split(New Char() {Chr(10)})
                 Dim idx As Integer = 0

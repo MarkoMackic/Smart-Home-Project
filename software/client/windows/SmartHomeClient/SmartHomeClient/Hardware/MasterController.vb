@@ -39,7 +39,7 @@ Public Class MasterController
             Case States.Login
                 DeviceLogin(authmessage)
         End Select
-        GPSTimeout = New Timeout(300) 'give it 300 milliseconds to get to itself
+        GPSTimeout = New Timeout(400) 'give it 300 milliseconds to get to itself
 
     End Sub
 
@@ -66,10 +66,10 @@ Public Class MasterController
                 hardwareChannel.sendData("pds", True, Me, "pinStateRecv")
                 hardwareChannel.sendData("pps", True, Me, "pinStateRecv")
                 hardwareChannel.sendData("pas", True, Me, "pinStateRecv")
-
                 GPSNextRun = False
             Else
                 If GPSTimeout.IsElapsed() Then
+                    hardwareChannel.CleanUpTimedOutWaiters()
                     GPSCount = 0
                     GPSNextRun = True
                     mainForm.addLog("Error in communication")

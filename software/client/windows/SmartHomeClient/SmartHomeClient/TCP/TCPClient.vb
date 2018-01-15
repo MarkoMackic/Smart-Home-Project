@@ -1,43 +1,66 @@
-﻿'Imports System.Net, System.Net.Sockets, System.Text
-'Imports System.Timers
+﻿Imports System.Net, System.Net.Sockets, System.Text
+Imports System.Timers
+Imports SmartHomeClient.Globals
 
+Namespace NetClients
+    Public Class TCPClient
+        Dim clientSocket As Socket
+        Dim byteData(1023) As Byte
+        Dim ping As Timer
+        Public Function Connect(Optional ByVal address As String = Nothing, Optional ByVal port As Integer = Nothing) 'function connect is connecting to server
 
+            If address Is Nothing Or port = Nothing Then
+                Return False
+            End If
+   
+            Try
+                clientSocket = New Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+                Dim ipAddress As IPAddress = ipAddress.Parse(address)
+                Dim ipEndPoint As IPEndPoint = New IPEndPoint(ipAddress, port)
+                clientSocket.BeginConnect(ipEndPoint, New AsyncCallback(AddressOf OnConnect), Nothing)
+                Return True
+            Catch ex As SocketException
+
+                mainForm.addLog("Maybe server down or you're not on internet, check your connection and restart application")
+                If Not clientSocket Is Nothing Then
+                    clientSocket.Disconnect(False)
+                End If
+                Return False
+            End Try
+
+        End Function
+        Private Sub OnConnect(ByVal ar As IAsyncResult)
+            Try
+                ' we're connected, end connect
+                clientSocket.EndConnect(ar)
+                'Log successful connect
+                elui.Log("Connection successful, logging in ..")
+                login(u_id, passwd) ' call login, if we don't login server bans us
+                clientSocket.BeginReceive(byteData, 0, byteData.Length, SocketFlags.None, _
+                                          New AsyncCallback(AddressOf OnRecieve), clientSocket) 'initialize data receive 
+                ping = New Timer '' init system timer 
+                ping.Interval = pingInterval '' set it to ping interval
+                ping.AutoReset = True 'timer will run forever
+                AddHandler ping.Elapsed, AddressOf pingServer 'when tick, pingServer()
+                ping.Start() 'start timer
+            Catch e As Exception
+                clientSocket.Dispose()
+                If MessageBox.Show("Error on connection, try again?", "Error", MessageBoxButtons.OKCancel) = DialogResult.OK Then
+                    elui.Log("Allowed exception while connection") 'log 
+                    Connect() ' connect again
+                End If
+            End Try
+
+        End Sub
+    End Class
+End Namespace
 'Public Class TCPClient
 
 
 
-'    Dim clientSocket As Socket '' private socket for connection
-'    Dim byteData(1023) As Byte '' initialize byteData array for receiving data
-'    Dim ping As Timer '' ping timer that will handle ping to server , it's useless data just to keep connection open
+'  
 
-'    Public Sub Connect(Optional ByVal address As String = Nothing, Optional ByVal port As Integer = Nothing) 'function connect is connecting to server
-'        'if parameters are given change globals to paramters else use globals
-'        If address = Nothing Then
-'            address = servAddr
-'        Else
-'            servAddr = address
-'        End If
-'        If port = Nothing Then
-'            port = servPort
-'        Else
-'            servPort = port
-'        End If
-'        'try to connect to server 
-'        Try
-'            clientSocket = New Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
-'            Dim ipAddress As IPAddress = ipAddress.Parse(address)
-'            Dim ipEndPoint As IPEndPoint = New IPEndPoint(ipAddress, port)
-'            clientSocket.BeginConnect(ipEndPoint, New AsyncCallback(AddressOf OnConnect), Nothing)
-'        Catch ex As SocketException
-'            'couldn't connect to server abort the program
-'            elui.Log("Maybe server down or you're not on internet, check your connection and restart application")
-'            'destroy client socket
-'            If Not clientSocket Is Nothing Then
-'                clientSocket.Disconnect(False)
-'            End If
-'        End Try
-
-'    End Sub
+'    
 '    Private Sub OnConnect(ByVal ar As IAsyncResult)
 '        Try
 '            ' we're connected, end connect

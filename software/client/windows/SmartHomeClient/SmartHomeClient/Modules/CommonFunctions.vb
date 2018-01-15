@@ -18,4 +18,9 @@ Module CommonFunctions
 
     End Sub
 
+    Public Function Map(ByVal x As Long, ByVal in_min As Long, ByVal in_max As Long, ByVal out_min As Long, ByVal out_max As Long) As Long
+        Return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
+    End Function
+
 End Module

@@ -7,7 +7,7 @@ bool tlc59Commands(char cmd_array[][10]) {
     
     byte tNumTlcs = atoi(cmd_array[1]);
 
-    if (tNumTlcs < MAX_TLCS && tNumTlcs > 0 && numTlcs == 0) {
+    if (tNumTlcs <= MAX_TLCS && tNumTlcs > 0 && numTlcs == 0) {
       numTlcs = tNumTlcs;
       Tlc.init(numTlcs);
       Serial.println(ok_msg);
@@ -26,6 +26,16 @@ bool tlc59Commands(char cmd_array[][10]) {
     if (numTlcs > 0) {
       Tlc.update();
       Serial.println(ok_msg);
+    } else {
+      Serial.println(err_msg);
+    }
+  }else if (strcmp(cmd_array[0], "tl59g") == 0 ) {
+    if (numTlcs > 0) {
+      for(uint8_t i = 0; i < numTlcs * 16;i++){
+        Serial.print(i);
+        Serial.print(" : ");
+        Serial.println(Tlc.get(i));
+      }
     } else {
       Serial.println(err_msg);
     }
