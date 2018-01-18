@@ -110,6 +110,7 @@
     <Reference Include="Emgu.Util">
       <HintPath>..\..\..\..\..\..\..\..\..\Emgu\emgucv-windows-universal 3.0.0.2157\bin\Emgu.Util.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic.PowerPacks.Vs, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SqlServerCe, Version=3.5.1.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
@@ -225,6 +226,12 @@
     </Compile>
     <Compile Include="TCP\Middleware\ClientManager.vb" />
     <Compile Include="TCP\TCPClient.vb" />
+    <Compile Include="Experiments\VideoPlayer.Designer.vb">
+      <DependentUpon>VideoPlayer.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Experiments\VideoPlayer.vb">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ClientConnectionDialog.resx">
@@ -251,6 +258,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SerialPortDialog.resx">
       <DependentUpon>SerialPortDialog.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Experiments\VideoPlayer.resx">
+      <DependentUpon>VideoPlayer.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -312,6 +322,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Res\Images\smart_iot.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Res\Video\testvideo.mp4">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="zxing.dll" />

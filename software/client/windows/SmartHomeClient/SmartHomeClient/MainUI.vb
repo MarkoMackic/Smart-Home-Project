@@ -4,6 +4,7 @@ Imports ZXing
 Imports Emgu.CV
 
 Imports System.Data.SqlServerCe
+Imports System.Security
 
 
 
@@ -30,15 +31,19 @@ Public Class MainUI
         End If
 
         'Net connection
-        Dim port As Integer, ipaddress As String, makeConnection As Boolean
+        Dim port As Integer, ipaddress As String, username As String, password As String, makeConnection As Boolean
         Dim netD As New ClientConnectionDialog()
         If netD.ShowDialog() = DialogResult.OK Then
             port = netD.Port
             ipaddress = netD.Host
+            username = netD.Username
+            password = netD.Password
             makeConnection = True
         Else
             port = Nothing
             ipaddress = Nothing
+            username = Nothing
+            password = Nothing
             makeConnection = False
         End If
 
@@ -54,10 +59,10 @@ Public Class MainUI
             AddHandler masterCont.LoggedIn, AddressOf continueInitialization
             If makeConnection Then
                 'this will instantiate tcpClient for us
-                cliManager = New ClientMiddleware.ClientManager(ipaddress, port)
+                cliManager = New ClientMiddleware.ClientManager(ipaddress, port, username, password)
             End If
         End If
- 
+
         logInstantiation(Me)
 
     End Sub
@@ -77,7 +82,7 @@ Public Class MainUI
     End Sub
     Private Sub faceRecognized(ByVal username As String)
         MsgBox(username)
-      
+
         faceRecognizer.Close()
     End Sub
 
@@ -133,7 +138,7 @@ Public Class MainUI
         Dim dev As Device = devManager.GetDevice(1)
         dev.ChangeState(New Object() {TextBox1.Text})
 
- 
+
     End Sub
 
     Private Sub TextBox2_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TextBox2.TextChanged

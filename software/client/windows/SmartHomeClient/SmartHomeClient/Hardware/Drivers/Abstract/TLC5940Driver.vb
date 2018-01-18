@@ -118,7 +118,7 @@ Namespace Drivers
 
                         End Select
                     End If
-                    mainForm.addLog(value)
+
                     If value > -1 And value < 4096 And pin > -1 And pin < 16 Then
                         masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, value), True, Me, "ChangeStateCallback")
                         masterCont.SendData(protocol_operations(CMD.UPDATE), True, Me)

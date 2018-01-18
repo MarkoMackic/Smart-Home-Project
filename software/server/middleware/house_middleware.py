@@ -1,62 +1,44 @@
+
+from middleware import socket_parser
+
+
 class HouseMiddleware(object):
+
     """Serves the houses
-    
-    This class should accept commands, interpret them
-    and return response to house request...
-    
+
+    This class is responsable for managing house
+    objects and devices.
+
     """
 
     def __init__(self):
         self.houses = {} 
         
-
-    def end_connection(self, socket):
+    def end_house_connection(self, socket):
         if socket in self.houses:
             print("Unregistered house with username " + self.houses[socket].username)
             del self.houses[socket]
         socket.transport.loseConnection()
 
-    def command_error(self, err_msg):
-        return ("ERROR:" + err_msg).encode("utf-8")
-
-    def command_ok(self, ok_note):
-        return ("OK:" + ok_note).encode("utf-8")
-
-    def command_custom(self, cmd):
-        return cmd.encode('utf-8')
-
-    def rtrn(self, resp, disconnect_client = False):
-        return resp , disconnect_client
-
-    def parse_command(self, socket, data):
-        data = data.decode('utf-8')
-        parts = data.split(':')
-        parts[0] = parts[0].lower()
-        if(parts[0] == 'login'):
-            if(len(parts) == 3):
-                return self.login(socket, *parts[1::])
-        
-        if parts[0] == "ping":
-            return self.pong()
-
-
-        return False
-
-
-    def login(self, socket,  username, password):
-        if socket in self.houses:
-            return self.rtrn(self.command_ok("Already logged in"))
-
-        for _ , house in self.houses.items():
-            if house.username == username:
-                return self.rtrn(self.command_error("House with that username alrady existst"), True)
-
+    def parse_house_command(self, socket, data):
+        return socket_parser.parse(self, socket, data)
+    
+    def add_house(self, socket, username, password):
         self.houses[socket] = House(username, password)
-        print("added house")
-        return self.rtrn(self.command_ok("Logged in successfully"))
+        return True
 
-    def pong(self):
-        return self.rtrn(False);
+    def refresh_devices(self, socket, device_list):
+        if socket in self.houses:
+            self.populate_device_list(self.houses[socket], device_list)
+            return True
+        else:
+            return False
+
+    def populate_device_list(self, device_list):
+        
+    ''' Websocket parser '''    
+
+
 
 class House(object):
     """House implementation

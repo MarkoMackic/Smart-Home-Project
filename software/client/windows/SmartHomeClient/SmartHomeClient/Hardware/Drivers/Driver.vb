@@ -4,6 +4,7 @@
 
         Public IsInitalized As Boolean
         Public Version As Integer = 0
+        Public AcceptValueType As String
 
         'needed for loading correct driver
         Public Shared Function supportsType(ByVal type As Integer) As Boolean

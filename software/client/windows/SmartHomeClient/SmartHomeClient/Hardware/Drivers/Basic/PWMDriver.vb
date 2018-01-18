@@ -76,8 +76,13 @@ Namespace Drivers
 
         'State change handlers
         Private Function ValueHandler(ByVal state() As Object, Optional ByVal slave As Device = Nothing)
-            If state.Length = 1 Then
-                Dim s As Integer = CType(state(0), Integer)
+            If state.Length = 1 And TypeOf state(0) Is Integer Or TypeOf state(0) Is String Then
+                Dim s As Integer = Nothing
+                If TypeOf state(0) Is String Then
+                    If Not Integer.TryParse(state(0), s) Then
+                        Return False
+                    End If
+                End If
                 If s > -1 And s < 256 Then
                     If device.Master Is Nothing Then 'means device executes on chip
                         masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, s), True, Me, "ChangeStateCallback")
@@ -88,7 +93,7 @@ Namespace Drivers
                 Else
                     Return False
                 End If
-          
+
             Else
                 Return False
             End If

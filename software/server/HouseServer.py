@@ -20,12 +20,12 @@ class HouseProtocol(LineReceiver):
         print("client connected")
 
     def connectionLost(self, reason):
-        houseMiddleware.end_connection(self)
+        houseMiddleware.end_house_connection(self)
         print("Client lost")
 
     def lineReceived(self, line):
         print("Line recieved ->  " + line.decode('utf-8'))
-        response , disconnect_client = houseMiddleware.parse_command(self, line)
+        response , disconnect_client = houseMiddleware.parse_house_command(self, line)
         if response != False:
             self.sendLine(response)
             print("Responded with -> " + response.decode('utf-8'))

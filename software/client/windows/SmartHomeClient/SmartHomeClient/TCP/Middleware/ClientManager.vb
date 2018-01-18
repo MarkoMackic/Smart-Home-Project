@@ -1,8 +1,11 @@
 ﻿Imports SmartHomeClient.Globals
 Namespace ClientMiddleware
     Public Class ClientManager
-        Public IsConnected As Boolean = False
-        Public Sub New(ByVal host As String, ByVal port As Integer)
+        Private uName As String, uPass As String
+
+        Public Sub New(ByVal host As String, ByVal port As Integer, ByVal username As String, ByVal password As String)
+            uName = username
+            uPass = password
             tcpCli = New NetClients.TCPClient()
             Try
                 Dim ipAddr As String = Net.Dns.GetHostEntry(host).AddressList(0).ToString()
@@ -21,12 +24,13 @@ Namespace ClientMiddleware
         End Sub
 
         Private Sub serverConnected()
-            IsConnected = True
-            Login("Marko", "Mackic")
+            Login(uName, uPass)
         End Sub
 
         Private Sub Login(ByVal uname As String, ByVal passwd As String)
-            tcpCli.SendLine("LOGIN:" & uname & ":" & passwd)
+            If tcpCli.isConnected() Then
+                tcpCli.SendLine("LOGIN:" & uname & ":" & passwd)
+            End If
         End Sub
     End Class
 End Namespace

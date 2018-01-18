@@ -9,13 +9,16 @@ Namespace NetClients
         Dim byteData(1023) As Byte
         Dim ping As Timer
 
+        Private tcpIP As String
+        Private tcpPort As Integer
         Public Event lineRecieved(ByVal data As String)
         Public Event servConnected()
         Public Function Connect(Optional ByVal address As String = Nothing, Optional ByVal port As Integer = Nothing)
             If address Is Nothing Or port = Nothing Then
                 Return False
             End If
-
+            tcpIP = address
+            tcpPort = port
             Try
                 clientSocket = New Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
                 Dim ipAddress As IPAddress = ipAddress.Parse(address)
