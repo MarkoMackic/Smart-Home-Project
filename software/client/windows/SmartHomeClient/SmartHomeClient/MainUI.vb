@@ -18,14 +18,31 @@ Public Class MainUI
     Private Delegate Sub _addLog(ByVal text As String)
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        'Set instance
         mainForm = Me
 
+        'Hardware comport 
         Dim comport As String = ""
 
         Dim spD As New SerialPortDialog()
         If spD.ShowDialog() = DialogResult.OK Then
             comport = spD.Result
         End If
+
+        'Net connection
+        Dim port As Integer, ipaddress As String, makeConnection As Boolean
+        Dim netD As New ClientConnectionDialog()
+        If netD.ShowDialog() = DialogResult.OK Then
+            port = netD.Port
+            ipaddress = netD.Host
+            makeConnection = True
+        Else
+            port = Nothing
+            ipaddress = Nothing
+            makeConnection = False
+        End If
+
+
 
 
         'Initialize all the resources
@@ -35,7 +52,10 @@ Public Class MainUI
             dbAdapter = New DBDriver("Data Source = DB.sdf")
             masterCont = New MasterController(MasterController.States.Login)
             AddHandler masterCont.LoggedIn, AddressOf continueInitialization
-
+            If makeConnection Then
+                'this will instantiate tcpClient for us
+                cliManager = New ClientMiddleware.ClientManager(ipaddress, port)
+            End If
         End If
  
         logInstantiation(Me)

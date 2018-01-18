@@ -1,38 +1,50 @@
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
 from twisted.internet.protocol import Factory
 from twisted.protocols.basic import LineReceiver
 from twisted.internet import reactor
 from autobahn.twisted.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 
-
-
+from middleware.house_middleware import *
 
 class HouseProtocol(LineReceiver):
 
-    def __init__(self, users):
+    def __init__(self):  
         self.state = None
 
     def connectionMade(self):
-        pass
+        #self.sendLine("hello".encode('utf-8'));
+        print("client connected")
 
     def connectionLost(self, reason):
-        pass
+        houseMiddleware.end_connection(self)
+        print("Client lost")
 
     def lineReceived(self, line):
-        pass
+        print("Line recieved ->  " + line.decode('utf-8'))
+        response , disconnect_client = houseMiddleware.parse_command(self, line)
+        if response != False:
+            self.sendLine(response)
+            print("Responded with -> " + response.decode('utf-8'))
+        
+        if(disconnect_client):
+            self.transport.loseConnection()
 
 
 
 class HouseFactory(Factory):
 
     def buildProtocol(self, addr):
-        return SocketProtocol()
+        return HouseProtocol()
 
 class WebsocketFactory(WebSocketServerFactory):
 
-	def __init__(self, addr):
-		self.protocol = WebsocketProtocol
-		super().__init__(addr)
+    def __init__(self, addr):
+        self.protocol = WebsocketProtocol
+        super().__init__(addr)
 
 
 class WebsocketProtocol(WebSocketServerProtocol):
@@ -55,9 +67,14 @@ class WebsocketProtocol(WebSocketServerProtocol):
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
 
-reactor.listenTCP(9000, WebsocketFactory(u"ws://127.0.0.1:9000"))
-reactor.listenTCP(8123, HouseFactory())
-reactor.run()
+if __name__ == "__main__":
+    
+    houseMiddleware  = HouseMiddleware() 
+    reactor.listenTCP(8123, HouseFactory())
+    reactor.listenTCP(9000, WebsocketFactory(u"ws://127.0.0.1:9000"))
+
+    reactor.run()
+
 
 
 

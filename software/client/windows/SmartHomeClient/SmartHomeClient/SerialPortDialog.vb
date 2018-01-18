@@ -18,7 +18,7 @@ Public Class SerialPortDialog
         Else
             MsgBox("Please choose COM port for device")
         End If
-     
+
     End Sub
 
 

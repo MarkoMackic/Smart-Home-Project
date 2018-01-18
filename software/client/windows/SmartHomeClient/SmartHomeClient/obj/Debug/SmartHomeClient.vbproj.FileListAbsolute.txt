@@ -64,3 +64,4 @@ C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeCl
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.QRScanner.resources
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.SerialPortDialog.resources
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.DeviceManagerUI.resources
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.ClientConnectionDialog.resources

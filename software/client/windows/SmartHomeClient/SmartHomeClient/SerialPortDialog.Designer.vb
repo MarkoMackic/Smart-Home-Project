@@ -33,9 +33,10 @@ Partial Class SerialPortDialog
         Me.OK_Button.Anchor = System.Windows.Forms.AnchorStyles.None
         Me.OK_Button.BackColor = System.Drawing.SystemColors.Control
         Me.OK_Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.OK_Button.Location = New System.Drawing.Point(120, 49)
+        Me.OK_Button.Location = New System.Drawing.Point(160, 68)
+        Me.OK_Button.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.OK_Button.Name = "OK_Button"
-        Me.OK_Button.Size = New System.Drawing.Size(49, 23)
+        Me.OK_Button.Size = New System.Drawing.Size(65, 32)
         Me.OK_Button.TabIndex = 0
         Me.OK_Button.Text = "OK"
         Me.OK_Button.UseVisualStyleBackColor = False
@@ -44,9 +45,10 @@ Partial Class SerialPortDialog
         '
         Me.cbSP.Anchor = System.Windows.Forms.AnchorStyles.None
         Me.cbSP.FormattingEnabled = True
-        Me.cbSP.Location = New System.Drawing.Point(188, 19)
+        Me.cbSP.Location = New System.Drawing.Point(251, 26)
+        Me.cbSP.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.cbSP.Name = "cbSP"
-        Me.cbSP.Size = New System.Drawing.Size(121, 21)
+        Me.cbSP.Size = New System.Drawing.Size(160, 26)
         Me.cbSP.TabIndex = 1
         '
         'btnRefresh
@@ -54,9 +56,10 @@ Partial Class SerialPortDialog
         Me.btnRefresh.Anchor = System.Windows.Forms.AnchorStyles.None
         Me.btnRefresh.BackColor = System.Drawing.SystemColors.Control
         Me.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnRefresh.Location = New System.Drawing.Point(25, 49)
+        Me.btnRefresh.Location = New System.Drawing.Point(33, 68)
+        Me.btnRefresh.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.btnRefresh.Name = "btnRefresh"
-        Me.btnRefresh.Size = New System.Drawing.Size(75, 23)
+        Me.btnRefresh.Size = New System.Drawing.Size(100, 32)
         Me.btnRefresh.TabIndex = 2
         Me.btnRefresh.Text = "Refresh"
         Me.btnRefresh.UseVisualStyleBackColor = False
@@ -65,25 +68,28 @@ Partial Class SerialPortDialog
         '
         Me.Label1.Anchor = System.Windows.Forms.AnchorStyles.None
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(22, 22)
+        Me.Label1.Location = New System.Drawing.Point(29, 30)
+        Me.Label1.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(147, 13)
+        Me.Label1.Size = New System.Drawing.Size(190, 18)
         Me.Label1.TabIndex = 3
         Me.Label1.Text = "Choose serial port of device : "
         '
         'SerialPortDialog
         '
         Me.AcceptButton = Me.OK_Button
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 18.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.ActiveCaption
-        Me.ClientSize = New System.Drawing.Size(344, 95)
+        Me.ClientSize = New System.Drawing.Size(459, 132)
         Me.ControlBox = False
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.btnRefresh)
         Me.Controls.Add(Me.cbSP)
         Me.Controls.Add(Me.OK_Button)
+        Me.Font = New System.Drawing.Font("Calibri", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+        Me.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "SerialPortDialog"

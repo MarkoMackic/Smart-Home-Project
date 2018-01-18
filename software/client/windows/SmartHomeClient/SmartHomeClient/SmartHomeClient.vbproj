@@ -147,6 +147,13 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientConnectionDialog.Designer.vb">
+      <DependentUpon>ClientConnectionDialog.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ClientConnectionDialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Crypto\AESCrypto.vb" />
     <Compile Include="Exceptions\DriverCreationException.vb" />
     <Compile Include="Exceptions\DeviceNotInitializedException.vb" />
     <Compile Include="Exceptions\DriverNotFoundException.vb" />
@@ -156,7 +163,6 @@
     <Compile Include="Hardware\Interfaces\IDriver.vb" />
     <Compile Include="Hardware\Drivers\Basic\PWMDriver.vb" />
     <Compile Include="Hardware\Drivers\Abstract\TLC5940Driver.vb" />
-    <Compile Include="Hardware\ProtocolSpecification.vb" />
     <Compile Include="Modules\CommonFunctions.vb" />
     <Compile Include="Database\DBDriver.vb" />
     <Compile Include="DBDataSet.Designer.vb">
@@ -217,9 +223,13 @@
     <Compile Include="SerialPortDialog.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="TCP\Middleware\ClientManager.vb" />
     <Compile Include="TCP\TCPClient.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ClientConnectionDialog.resx">
+      <DependentUpon>ClientConnectionDialog.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DeviceManagerUI.resx">
       <DependentUpon>DeviceManagerUI.vb</DependentUpon>
     </EmbeddedResource>

@@ -135,14 +135,12 @@ Public Class MasterController
         ElseIf msg.StartsWith("<an>") Then
             analogPins = msg
             GPSTime = Now.Subtract(timeSent).TotalMilliseconds
-
+            GPSNextRun = True
+            GPSCount = 0
         End If
    
         'Broadcast among Devices
         devManager.broadcastPinStates()
-        If GPSCount = 3 Then
-            GPSNextRun = True
-            GPSCount = 0
-        End If
+
     End Sub
 End Class
