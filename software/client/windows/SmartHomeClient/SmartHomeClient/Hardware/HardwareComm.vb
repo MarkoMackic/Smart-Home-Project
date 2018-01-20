@@ -104,8 +104,7 @@ Public Class HardwareComm
         '    MsgBox(msg.Contains(Chr(10)))
         'End If
         While recievingThrRunning
-            'Maybe here to do cleanup of timed of waiters ? 
-
+         
 
             If msg.Contains(Chr(10)) Then
                 Dim temp() As String = msg.Split(New Char() {Chr(10)})
@@ -159,6 +158,7 @@ Public Class HardwareComm
 
 
             End If
+            Thread.Sleep(5)
         End While
 
     End Sub

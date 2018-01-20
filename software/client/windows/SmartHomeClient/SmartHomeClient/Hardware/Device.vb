@@ -1,5 +1,6 @@
 ﻿Imports System.Reflection
 Imports SmartHomeClient.Globals
+Imports System.Dynamic
 
 Public Class Device
     'Will hold device information
@@ -12,16 +13,18 @@ Public Class Device
     Public Pins As List(Of Integer)
     Private Driver As Drivers.IDriver
     Public Master As Device = Nothing
-    Public IsSlave As Boolean = False
     Public Adress As String = Nothing
+
+
     Private Function InstantiateDriver(ByVal type As Integer)
         Dim resultDriver As Object = Nothing
         Dim types = From t In Assembly.GetExecutingAssembly().GetTypes()
-                     Where t.IsClass And t.Namespace = "SmartHomeClient.Drivers"
+                     Where t.IsClass And t.Namespace = "SmartHomeClient.Drivers" And t.BaseType.Name = "Driver"
                      Select t
 
 
         For Each drv_type As Type In types
+
             If drv_type.GetMethod("supportsType").Invoke(Nothing, New Object() {type}) Then
                 resultDriver = Activator.CreateInstance(drv_type, New Object() {Me})
                 Exit For
@@ -29,18 +32,19 @@ Public Class Device
         Next
         Return resultDriver
     End Function
-
+    Private Sub addLog(ByVal data As String)
+        mainForm.addLog(data, Color.SteelBlue)
+    End Sub
     Public Sub New(ByVal devName As String, ByVal devPins() As Integer, ByVal devType As Integer, ByVal devID As Integer, Optional ByVal devMaster As Device = Nothing, Optional ByVal devAddress As String = Nothing)
+     
 
         Name = devName
         Pins = devPins.ToList()
         Type = devType
         ID = devID
-        Driver = InstantiateDriver(Type)
 
-        If Driver Is Nothing Then
-            Throw New DriverNotFoundException(DRV_NOT_FOUND)
-        End If
+
+    
 
         If Not devMaster Is Nothing Then
             If devMaster.supportsChild(devType) Then
@@ -50,14 +54,13 @@ Public Class Device
             End If
         End If
 
-
-
-        If Not Master Is Nothing Then
-            IsSlave = True
+        Driver = InstantiateDriver(Type)
+        If Driver Is Nothing Then
+            Throw New DriverNotFoundException(DRV_NOT_FOUND)
         End If
-        mainForm.addLog(devName + IsSlave.ToString())
+
         isInitalized = True
-        mainForm.addLog(String.Format("Device ({0}) initialized.", Name))
+        addLog(String.Format("Device ({0}) initialized.", Name))
     End Sub
     Public Function supportsChild(ByVal devType As Integer)
         Return Driver.GetType().GetMethod("supportsChild").Invoke(Driver, New Object() {devType})
@@ -88,5 +91,23 @@ Public Class Device
         Else
             Return False
         End If
+    End Function
+
+    Public Function SerializableObject()
+        Dim tempObj As Object
+        tempObj = New ExpandoObject()
+
+        tempObj.Name = Me.Name
+        tempObj.Type = Me.Type
+        tempObj.ID = Me.ID
+        If Not Me.Master Is Nothing Then
+            tempObj.MasterName = Me.Master.Name
+        End If
+
+
+
+
+
+
     End Function
 End Class

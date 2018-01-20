@@ -35,7 +35,7 @@ class HouseMiddleware(object):
             return False
 
     def populate_device_list(self, device_list):
-        
+        pass
     ''' Websocket parser '''    
 
 

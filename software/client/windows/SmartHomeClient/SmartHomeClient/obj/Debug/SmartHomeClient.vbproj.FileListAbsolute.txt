@@ -67,3 +67,5 @@ C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeCl
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.ClientConnectionDialog.resources
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Res\Video\testvideo.mp4
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.VideoPlayer.resources
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Newtonsoft.Json.dll
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.SplashScreen.resources

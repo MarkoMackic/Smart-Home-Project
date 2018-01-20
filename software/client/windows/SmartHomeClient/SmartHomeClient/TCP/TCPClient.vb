@@ -13,6 +13,9 @@ Namespace NetClients
         Private tcpPort As Integer
         Public Event lineRecieved(ByVal data As String)
         Public Event servConnected()
+        Public Sub New()
+            logInstantiation(Me)
+        End Sub
         Public Function Connect(Optional ByVal address As String = Nothing, Optional ByVal port As Integer = Nothing)
             If address Is Nothing Or port = Nothing Then
                 Return False

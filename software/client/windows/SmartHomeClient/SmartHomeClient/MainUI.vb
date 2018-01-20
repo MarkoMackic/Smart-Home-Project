@@ -16,12 +16,13 @@ Public Class MainUI
     Private state1 As Integer = 0
     Private state2 As Integer = 0
 
-    Private Delegate Sub _addLog(ByVal text As String)
+    Private Delegate Sub _addLog(ByVal text As String, ByVal color As Color)
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        'SplashScreen.ShowDialog()
         'Set instance
         mainForm = Me
-
+        changeProgress(10)
         'Hardware comport 
         Dim comport As String = ""
 
@@ -68,11 +69,16 @@ Public Class MainUI
     End Sub
 
     Private Sub continueInitialization()
+        If InvokeRequired Then
+            Invoke(Sub() continueInitialization())
+            Return
+        End If
 
         devManager = New DeviceManager()
         devManager.addDevice("TLC5940", New Integer() {9, 11, 12, 51, 52}, 5, 1)
         devManager.addDevice("LED ZELENA", New Integer() {13}, 2, 2, 1)
-        devManager.addDevice("LED NA KONTROLERU", New Integer() {13}, 2, 3)
+        devManager.addDevice("LED PLAVA", New Integer() {13}, 2, 3)
+        devManager.isInitialized = True
         resLoaded = True
     End Sub
 
@@ -86,18 +92,29 @@ Public Class MainUI
         faceRecognizer.Close()
     End Sub
 
-    Public Sub addLog(ByVal text As String)
+    Public Sub addLog(ByVal text As String, Optional ByVal color As Color = Nothing)
         Try
             If InvokeRequired Then
-                Invoke(New _addLog(AddressOf addLog), text)
+                Invoke(New _addLog(AddressOf addLog), text, color)
                 Return
 
             End If
+
+            If color = Nothing Then
+                color = color.White
+            End If
+
+            txtLog.SelectionColor = color
             txtLog.AppendText(text + vbNewLine)
+            txtLog.ScrollToCaret()
         Catch ex As ObjectDisposedException
             Debug.WriteLine("Disposed object accessed")
         End Try
 
+    End Sub
+
+    Public Sub changeProgress(ByVal percent As Integer)
+        ProgressBar1.Value += percent
     End Sub
 
     Private Sub Button1_Click_1(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
@@ -149,4 +166,10 @@ Public Class MainUI
         Dim dev As Device = devManager.GetDevice(2)
         dev.ChangeState(New Object() {TextBox2.Text})
     End Sub
+
+    Private Sub txtLog_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtLog.TextChanged
+
+    End Sub
+
+
 End Class

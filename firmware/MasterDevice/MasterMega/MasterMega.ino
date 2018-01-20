@@ -120,11 +120,8 @@ void getCmd() {
     index++;
   }
 
-  if (strcmp(input, "pds") == 0) {
-    printDigitalStates();
-  } else if (strcmp(input, "pps") == 0) {
-    printPwmStates();
-  } else if (strcmp(input, "pas") == 0) {
+
+  if (strcmp(input, "pas") == 0) {
     printAnalogStates();
   } else if (strcmp(input, "lo") == 0) {
     vertified = 0;
@@ -172,60 +169,8 @@ void getCmd() {
 
 
 
-bool digitalReadOutputPin(uint8_t pin)
-{
-  uint8_t bit = digitalPinToBitMask(pin);
-  uint8_t port = digitalPinToPort(pin);
-  if (port == NOT_A_PIN)
-    return LOW;
 
-  return (*portOutputRegister(port) & bit) ? HIGH : LOW;
-}
-//states of digital pins
-void printDigitalStates() {
-  strcpy(ret, "<ds>");
-  for (byte i = 2; i < 54; i++) {
-    if (i != 53) {
-      snprintf(buf, sizeof(buf), "%i", i);
-      strcat(ret, buf);
-      strcat(ret, ":");
-      snprintf(buf, sizeof(buf), "%i", digitalReadOutputPin(i));
-      strcat(ret, buf);
-      strcat(ret, ",");
-    } else {
-      snprintf(buf, sizeof(buf), "%i", i);
-      strcat(ret, buf);
-      strcat(ret, ":");
-      snprintf(buf, sizeof(buf), "%i", digitalReadOutputPin(i));
-      strcat(ret, buf);
-      strcat(ret, "</ds>");
-    }
-  }
-  Serial.println(ret);
-}
-//states on pwm pins
-void printPwmStates() {
-  strcpy(ret, "<pwm>");
-  for (byte i = 0; i < sizeof(pwmPins); i++) {
-    if (i != sizeof(pwmPins) - 1) {
-      snprintf(buf, sizeof(buf), "%d", pwmPins[i]);
-      strcat(ret, buf);
-      strcat(ret, ":");
-      snprintf(buf, sizeof(buf), "%d", pwmValues[i]);
-      strcat(ret, buf);
-      strcat(ret, ",");
-    } else {
-      snprintf(buf, sizeof(buf), "%d", pwmPins[i]);
-      strcat(ret, buf);
-      strcat(ret, ":");
-      snprintf(buf, sizeof(buf), "%d", pwmValues[i]);
-      strcat(ret, buf);
-      strcat(ret, "</pwm>");
-    }
-  }
-  Serial.println(ret);
-}
-//states on analog pins
+
 void printAnalogStates() {
   strcpy(ret, "<an>");
   for (byte i = 0; i < sizeof(analogPins); i++) {

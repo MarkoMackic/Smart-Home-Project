@@ -1,4 +1,6 @@
 ﻿Imports SmartHomeClient.Globals
+Imports System.Threading
+
 Public Class MasterController
     'Abstract functions for hardwareChannel ( serial port ) 
     '
@@ -14,11 +16,10 @@ Public Class MasterController
     Public IsConnected As Boolean = False
     Public IsLoggedIn As Boolean = False
 
-    Private GPSThread As Boolean = False
-    Private GPSNextRun As Boolean = False
-    Private GPSCount As Integer = 0
-    Private GPSTimeout As Timeout
-    Public GPSTime As Integer
+    Private GPSResetEvent As ManualResetEvent = New ManualResetEvent(True)
+    Private GPSThreadRunning As Boolean = False
+    Private GPSTimeout As Integer = 400
+
     Public digitalPins, pwmPins, analogPins As String
 
     Private timeSent As DateTime
@@ -31,7 +32,7 @@ Public Class MasterController
         logInstantiation(Me)
         If hardwareChannel.startCommunication() Then
             IsConnected = True
-            mainForm.addLog("Connected to device .")
+            addLog("Connected to device .")
         End If
         hardwareChannel.sendData("lo")
         Me.state = st
@@ -39,7 +40,7 @@ Public Class MasterController
             Case States.Login
                 DeviceLogin(authmessage)
         End Select
-        GPSTimeout = New Timeout(400) 'give it 300 milliseconds to get to itself
+
 
     End Sub
 
@@ -52,51 +53,44 @@ Public Class MasterController
         'Interface to hardwareChannel 
 
         If IsConnected And IsLoggedIn Then
-            mainForm.addLog("Sending data to controller : " + data)
+            addLog("Sending data to controller : " + data)
             hardwareChannel.sendData(data, waitForData, caller, callback)
         End If
     End Sub
 
     Public Sub GetPinStates()
-        While GPSThread
-  
-            If GPSNextRun Then
-                GPSTimeout.UpdateTime()
-                timeSent = Now
-                hardwareChannel.sendData("pds", True, Me, "pinStateRecv")
-                hardwareChannel.sendData("pps", True, Me, "pinStateRecv")
-                hardwareChannel.sendData("pas", True, Me, "pinStateRecv")
-                GPSNextRun = False
+        While GPSThreadRunning
+
+
+            timeSent = Now
+            hardwareChannel.sendData("pas", True, Me, "pinStateRecv")
+            If Not GPSResetEvent.WaitOne(GPSTimeout) Then
+                addLog("Recieving data timeout")
+                hardwareChannel.CleanUpTimedOutWaiters()
             Else
-                If GPSTimeout.IsElapsed() Then
-                    hardwareChannel.CleanUpTimedOutWaiters()
-                    GPSCount = 0
-                    GPSNextRun = True
-                    mainForm.addLog("Error in communication")
-
-                End If
+                GPSResetEvent.Reset()
             End If
-
         End While
     End Sub
 
     Private Sub LoginDataArrived(ByRef data As String)
+
         Select Case data
             Case "OK"
                 state = States.NormOp
                 IsLoggedIn = True
-                mainForm.addLog("Logged in to device")
+                addLog("Logged in to device")
                 'Raise event, so procedures can go on
                 RaiseEvent LoggedIn()
                 'Start listening for pin states
                 Dim thr As New Threading.Thread(AddressOf GetPinStates)
-                GPSThread = True
-                GPSNextRun = True
                 thr.IsBackground = True
                 thr.Start()
 
+                GPSThreadRunning = True
 
             Case "ERROR"
+                addLog("Authentication with hardware failed")
                 Dim res As MsgBoxResult = MsgBox(String.Format("Authentication with the hardware failed, do you want to try again? ({0})", data), MsgBoxStyle.YesNo, "Authentication failed")
                 If res = MsgBoxResult.Yes Then
                     DeviceLogin(InputBox("Enter your device password", "Pass"))
@@ -125,22 +119,16 @@ Public Class MasterController
 
     Public Sub pinStateRecv(ByVal msg As String)
       
-        'We wait for 3 messages. And then again.
-        GPSCount += 1
-
-        If msg.StartsWith("<pwm>") Then
-            pwmPins = msg
-        ElseIf msg.StartsWith("<ds>") Then
-            digitalPins = msg
-        ElseIf msg.StartsWith("<an>") Then
+        If msg.StartsWith("<an>") Then
             analogPins = msg
-            GPSTime = Now.Subtract(timeSent).TotalMilliseconds
-            GPSNextRun = True
-            GPSCount = 0
+            GPSResetEvent.Set()
         End If
-   
-        'Broadcast among Devices
-        devManager.broadcastPinStates()
 
     End Sub
+
+
+    Private Sub addLog(ByVal data As String)
+        mainForm.addLog(data, Color.Green)
+    End Sub
+
 End Class

@@ -4,6 +4,7 @@ Namespace ClientMiddleware
         Private uName As String, uPass As String
 
         Public Sub New(ByVal host As String, ByVal port As Integer, ByVal username As String, ByVal password As String)
+            logInstantiation(Me)
             uName = username
             uPass = password
             tcpCli = New NetClients.TCPClient()

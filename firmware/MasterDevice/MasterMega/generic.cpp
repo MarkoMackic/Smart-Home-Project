@@ -23,7 +23,23 @@ bool genericCommands(char cmd_array[][10]) {
     bool state = atoi(cmd_array[2]);
     pinMode(pin, state);
     Serial.println(ok_msg);
-  } else if (strcmp(cmd_array[0], "aw") == 0) {
+
+  }else if (strcmp(cmd_array[0], "gpws") == 0) {
+    
+    byte pin = atoi(cmd_array[1]);
+    for (byte i = 0; i < sizeof(pwmPins); i++) {
+      if (pin == pwmPins[i]) {
+        Serial.println(pwmValues[i]);
+        break;
+      }
+    }
+    
+  }else if (strcmp(cmd_array[0], "gds") == 0) {
+
+    byte pin = atoi(cmd_array[1]);
+    Serial.println(digitalReadOutputPin(pin));
+    
+  }else if (strcmp(cmd_array[0], "aw") == 0) {
     byte pin = atoi(cmd_array[1]);
     byte state = atoi(cmd_array[2]);
     bool statechanged = 0;

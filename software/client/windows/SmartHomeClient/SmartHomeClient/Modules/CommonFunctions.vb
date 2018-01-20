@@ -2,7 +2,7 @@
 Module CommonFunctions
 
     Public Sub logInstantiation(ByVal obj As Object)
-        mainForm.addLog(obj.GetType().Name + " is instantiated . ")
+        mainForm.addLog(obj.GetType().Name + " is instantiated . ", Color.Red)
     End Sub
 
     Public Function trimSpaces(ByVal str As String)

@@ -1,11 +1,11 @@
 ﻿Imports System.Threading.Tasks
 Imports SmartHomeClient.Globals
-
+Imports System.Text.RegularExpressions
 Public Class DeviceManager
     Private devices As List(Of Device)
     Private UI As DeviceManagerUI
     Private pinsHashTable As New Hashtable()
-    Private isInitialized = False
+    Public isInitialized = False
 
     Public Sub New()
         ''initalize resources
@@ -44,7 +44,6 @@ Public Class DeviceManager
 
                 If dev.ID = devMasterId Then
                     devMaster = dev
-
                     Exit For
                 End If
             Next
@@ -84,9 +83,5 @@ Public Class DeviceManager
         End If
         Return Nothing
     End Function
-    Public Sub broadcastPinStates()
-        If Me.isInitialized Then
 
-        End If
-    End Sub
 End Class

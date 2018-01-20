@@ -8,7 +8,7 @@ Namespace Drivers
         Implements Drivers.IDriver
 
         Shared supportedChildren As New List(Of Integer) From {1, 2}
-
+        Public Shared InputMask As String = "NONE"
 
         Dim protocol_operations = New Dictionary(Of Integer, String) From {
             {1, "tl59i:{0}"},
@@ -84,21 +84,21 @@ Namespace Drivers
         'Serial data handlers 
 
         Public Overrides Sub SerialDataRecieved(ByVal data As String, ByVal cmd As String)
-            mainForm.addLog(device.Name + "_driver : " + data)
+            Driver.driverLog(String.Format("{0}_driver : {1}", device.Name, data))
         End Sub
 
         Public Sub InitStateReport(ByVal data As String, ByVal cmd As String)
             If data = "OK" Then
-                mainForm.addLog(String.Format("Driver for device ( {0} ) is normally initialized", device.Name))
+                Driver.driverLog(String.Format("Driver for device ( {0} ) is normally initialized", device.Name))
             Else
-                mainForm.addLog(String.Format("Driver for device ( {0} ) is initialized, but device is already setup on hardware", device.Name))
+                Driver.driverLog(String.Format("Driver for device ( {0} ) is initialized, but device is already setup on hardware", device.Name))
             End If
             IsInitalized = True
         End Sub
 
         Public Overrides Sub ChangeStateCallback(ByVal data As String, ByVal cmd As String)
             If data <> "OK" Then
-                mainForm.addLog("Didn't change device state")
+                Driver.driverLog(device.Name & " : Didn't change device state")
             End If
         End Sub
 
