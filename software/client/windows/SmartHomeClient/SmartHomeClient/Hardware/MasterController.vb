@@ -146,7 +146,10 @@ Public Class MasterController
 
     End Sub
 
-
+    Public Sub Destroy()
+        GPSThreadRunning = False
+        hardwareChannel.stopCommunication()
+    End Sub
     Private Sub addLog(ByVal data As String)
         mainForm.addLog(data, Color.Green)
     End Sub

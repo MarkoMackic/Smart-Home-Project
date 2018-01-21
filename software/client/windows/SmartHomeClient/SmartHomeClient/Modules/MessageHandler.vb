@@ -4,7 +4,7 @@ Public Class MessageHandler
         logInstantiation(Me)
     End Sub
     Public Function SerialDataRecieved(ByVal msg As String)
-        mainForm.addLog("Unhandled serial message : " + msg)
+        Log("Unhandled serial message : " + msg, Color.OrangeRed)
         Return 0
     End Function
     Public Function handleServerMessage(ByVal msg As String)

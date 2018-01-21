@@ -25,8 +25,11 @@ Public Class DeviceManager
         ''initalize resources
         devices = New List(Of Device)
         logInstantiation(Me)
-        sendDevicesThr = New Thread(AddressOf SendDevicesToServer)
-        sendDevicesThr.Start()
+        If Not cliManager Is Nothing Then
+            sendDevicesThr = New Thread(AddressOf SendDevicesToServer)
+            sendDevicesThr.Start()
+        End If
+
     End Sub
 
     Private Function pinConflicts(ByVal devMaster As Integer, ByVal devPins() As Integer)
@@ -117,6 +120,12 @@ Public Class DeviceManager
 
     End Sub
 
+    Public Sub Destroy()
+        sendDevicesThrRunning = False
+        If (sendDevicesThr.ThreadState = ThreadState.Running) Then
+            sendDevicesThr.Abort()
+        End If
+    End Sub
 
     Public Function GetDevice(ByVal idx As Integer)
         If idx < devices.Count Then

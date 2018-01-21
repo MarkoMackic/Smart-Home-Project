@@ -16,10 +16,6 @@ Public Class SplashScreen
 
     End Sub
 
-    Private Sub SplashScreen_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles Me.Paint
-        '
-    End Sub
-
     Private Sub changeText(ByVal text As String)
         If InvokeRequired Then
             Me.Invoke(Sub() changeText(text))

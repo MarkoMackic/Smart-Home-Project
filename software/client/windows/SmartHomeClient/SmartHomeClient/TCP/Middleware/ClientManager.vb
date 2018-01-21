@@ -72,6 +72,11 @@ Namespace ClientMiddleware
             LastPayloadSize = jsonData.Length
             tcpCli.SendLine("SDS:" & jsonData)
         End Sub
+
+
+        Public Sub Destory()
+            tcpCli.Destroy(0)
+        End Sub
         'Message handlers 
 
         Private Function ProtocolConfirmation(ByVal data As String) As Boolean
@@ -94,6 +99,8 @@ Namespace ClientMiddleware
             End If
             Return False
         End Function
+
+
         Private Function SetDevStatesResponse(ByVal data As String) As Boolean ' the most used network function, so we'll calculate speed on it
 
             Dim parts() As String = data.Split(":")

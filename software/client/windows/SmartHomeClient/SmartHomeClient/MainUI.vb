@@ -19,6 +19,12 @@ Public Class MainUI
     Private Delegate Sub _addLog(ByVal text As String, ByVal color As Color)
     Private Delegate Sub _changeText(ByVal text As String, ByVal ctl As Control)
 
+    Private Sub MainUI_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
+        masterCont.Destroy()
+        cliManager.Destory()
+        devManager.Destroy()
+    End Sub
+
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         'SplashScreen.ShowDialog()
         'Set instance
@@ -101,7 +107,7 @@ Public Class MainUI
 
             End If
 
-            If color = Nothing Then
+            If color = Nothing Or color = color.Black Then
                 color = color.White
             End If
 
@@ -180,4 +186,7 @@ Public Class MainUI
 
 
 
+    Private Sub Panel1_Paint(ByVal sender As System.Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles Panel1.Paint
+
+    End Sub
 End Class
