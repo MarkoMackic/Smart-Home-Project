@@ -1,16 +1,32 @@
 ﻿Imports System.Threading.Tasks
 Imports SmartHomeClient.Globals
 Imports System.Text.RegularExpressions
+Imports Newtonsoft.Json
+Imports System.Threading
+
+
 Public Class DeviceManager
     Private devices As List(Of Device)
     Private UI As DeviceManagerUI
     Private pinsHashTable As New Hashtable()
-    Public isInitialized = False
+    Private isInitialized = False
+
+    Private logColor As Color = Color.Gold
+
+    Private sendDevicesThrRunning As Boolean = True
+    Private sendDevicesThr As Thread
+    Public sendDevicesThrSignal As Boolean = True
+    Private sendDevicesThrTimeout As Integer = 300
+
+
+
 
     Public Sub New()
         ''initalize resources
         devices = New List(Of Device)
         logInstantiation(Me)
+        sendDevicesThr = New Thread(AddressOf SendDevicesToServer)
+        sendDevicesThr.Start()
     End Sub
 
     Private Function pinConflicts(ByVal devMaster As Integer, ByVal devPins() As Integer)
@@ -50,7 +66,7 @@ Public Class DeviceManager
         End If
 
         If pinConflicts(devMasterId, devPins) Then
-            mainForm.addLog(String.Format("Device {0} can't be instantiated because there is pin conflicts with one of the previously instantiated devices", devName))
+            Log(String.Format("Device {0} can't be instantiated because there is pin conflicts with one of the previously instantiated devices", devName), logColor)
             Return False
         End If
 
@@ -60,10 +76,10 @@ Public Class DeviceManager
             devices.Add(dev)
             Return True
         Catch ex As DriverNotFoundException
-            mainForm.addLog("No driver found for : " + devName)
+            Log("No driver found for : " + devName, logColor)
             Return False
         Catch ex As Exception
-            mainForm.addLog(ex.Message)
+            Log(ex.Message, logColor)
             Return False
         End Try
 
@@ -73,9 +89,34 @@ Public Class DeviceManager
         Me.UI = UI
         AddHandler UI.FormClosed, AddressOf detachUI
     End Sub
+
     Private Sub detachUI()
         Me.UI = Nothing
     End Sub
+
+    Private Sub SendDevicesToServer()
+        While sendDevicesThrRunning
+            If cliManager.LoggedIn And sendDevicesThrSignal Then
+                Dim temp As New List(Of Object)
+
+                For Each dev As Device In devices.ToArray()
+                    temp.Add(dev.SerializableObject())
+                Next
+
+                sendDevicesThrSignal = False
+                cliManager.SendDeviceData(JsonConvert.SerializeObject(temp))
+            End If
+
+            Thread.Sleep(sendDevicesThrTimeout)
+
+            'Using jsonWriter As New System.IO.StreamWriter("devices.json")
+            '    jsonWriter.WriteLine(JsonConvert.SerializeObject(temp))
+            'End Using
+
+        End While
+
+    End Sub
+
 
     Public Function GetDevice(ByVal idx As Integer)
         If idx < devices.Count Then

@@ -3,12 +3,13 @@
 Namespace Drivers
 
 
-    Public Class TLC5940Driver
+    Public Class TLC5940
         Inherits Drivers.Driver
         Implements Drivers.IDriver
 
         Shared supportedChildren As New List(Of Integer) From {1, 2}
         Public Shared InputMask As String = "NONE"
+        Private StateString As String = "Abstract"
 
         Dim protocol_operations = New Dictionary(Of Integer, String) From {
             {1, "tl59i:{0}"},
@@ -46,7 +47,7 @@ Namespace Drivers
 
 
 
-       
+
         Public Sub New(ByVal dev As Device)
             Dim pins As List(Of Integer) = dev.Pins
 
@@ -56,13 +57,17 @@ Namespace Drivers
             checkPins(pins)
             devicePins = pins
             device = dev
-            masterCont.SendData(String.Format(protocol_operations(CMD.INIT), 1), True, Me, "InitStateReport")
+            masterCont.SendData(String.Format(protocol_operations(CMD.INIT), 1), True, Me, "InitReport")
         End Sub
 
         Private Function checkPins(ByVal pins As List(Of Integer))
             'depends on the board.. MEGA,UNO,Due etc, Have to implement static board info..
             'Throws execption that gets retrown to device that tried instantiation
             Return True
+        End Function
+
+        Public Overrides Function StateStr()
+            Return Me.StateString
         End Function
 
         Public Overrides Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing)
@@ -87,7 +92,7 @@ Namespace Drivers
             Driver.driverLog(String.Format("{0}_driver : {1}", device.Name, data))
         End Sub
 
-        Public Sub InitStateReport(ByVal data As String, ByVal cmd As String)
+        Public Sub InitReport(ByVal data As String, ByVal cmd As String)
             If data = "OK" Then
                 Driver.driverLog(String.Format("Driver for device ( {0} ) is normally initialized", device.Name))
             Else

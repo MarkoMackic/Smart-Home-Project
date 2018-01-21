@@ -165,8 +165,8 @@
     <Compile Include="Hardware\DeviceManager.vb" />
     <Compile Include="Hardware\Drivers\Driver.vb" />
     <Compile Include="Hardware\Interfaces\IDriver.vb" />
-    <Compile Include="Hardware\Drivers\Basic\PWMDriver.vb" />
-    <Compile Include="Hardware\Drivers\Abstract\TLC5940Driver.vb" />
+    <Compile Include="Hardware\Drivers\Basic\PWMOutput.vb" />
+    <Compile Include="Hardware\Drivers\Abstract\TLC5940.vb" />
     <Compile Include="Modules\CommonFunctions.vb" />
     <Compile Include="Database\DBDriver.vb" />
     <Compile Include="DBDataSet.Designer.vb">
@@ -180,7 +180,7 @@
     <Compile Include="DeviceManagerUI.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Hardware\Drivers\Basic\DigitalDriver.vb" />
+    <Compile Include="Hardware\Drivers\Basic\DigitalOutput.vb" />
     <Compile Include="Modules\ErrorDescriptors.vb" />
     <Compile Include="Hardware\MasterController.vb" />
     <Compile Include="Camera\FaceRecognition.Designer.vb">

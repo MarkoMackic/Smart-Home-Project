@@ -3,10 +3,11 @@
 Namespace Drivers
 
 
-    Public Class DigitalDriver
+    Public Class DigitalOutput
         Inherits Drivers.Driver
 
         Public Shadows Event StateChanged(ByVal state As String)
+        Public StateString As String = "0"
 
         Dim protocol_operations = New Dictionary(Of Integer, String) From {
             {1, "pm:{0}:{1}"},
@@ -53,6 +54,9 @@ Namespace Drivers
             Return False
         End Function
 
+        Public Overrides Function StateStr()
+            Return Me.StateString
+        End Function
 
 
         Public Overrides Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing)
@@ -69,21 +73,25 @@ Namespace Drivers
         End Function
 
         'State change handlers
-        Private Function ValueHandler(ByVal state() As Object, Optional ByVal operation As String = "CHANGE")
+        Private Function ValueHandler(ByVal state() As Object, Optional ByVal validate As Boolean = False)
             If state.Length = 1 Then
                 Dim s As Integer = CType(state(0), Integer)
                 If s = 1 Or s = 0 Then
-                    Select Case operation
-                        Case "CHANGE"
-                            If device.Master Is Nothing Then
-                                masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, s), True, Me, "ChangeStateCallback")
-                                Return True
-                            Else
-                                Return device.Master.ChangeState(New Object() {pin, state}, device)
-                            End If
+                    If Me.StateString <> s.ToString() Then
+                        Me.StateString = s.ToString()
+                        RaiseEvent StateChanged(Me.StateString)
+                        Driver.driverLog(String.Format("Driver ({0}) state change : {1} ", device.Name, StateString))
+                    End If
+                    If validate Then
+                        Return True
+                    End If
+                    If device.Master Is Nothing Then 'means device executes on chip
+                        masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, s), True, Me, "ChangeStateCallback")
+                        Return True
+                    Else
+                        Return device.Master.ChangeState(New Object() {pin, s}, device)
+                    End If
 
-                    End Select
-               
 
                 Else
                     Return False
@@ -110,7 +118,7 @@ Namespace Drivers
         Public Sub InitalStateCallback(ByVal data As String, ByVal cmd As String)
             Dim isHandled As Boolean
 
-            isHandled = ValueHandler(New Object() {data}, "SET")
+            isHandled = ValueHandler(New Object() {data}, True)
             'you can daisychain here too
             If Not isHandled Then
                 Driver.driverLog(String.Format("Driver ( {0} ) failed inital state set", device.Name))

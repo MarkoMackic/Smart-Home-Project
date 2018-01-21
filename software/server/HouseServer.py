@@ -17,6 +17,7 @@ class HouseProtocol(LineReceiver):
 
     def connectionMade(self):
         #self.sendLine("hello".encode('utf-8'));
+        self.sendLine(b"V2_SMART_HOME_AUTOMATION")
         print("client connected")
 
     def connectionLost(self, reason):
@@ -24,11 +25,11 @@ class HouseProtocol(LineReceiver):
         print("Client lost")
 
     def lineReceived(self, line):
-        print("Line recieved ->  " + line.decode('utf-8'))
+        # print("Line recieved ->  " + line.decode('utf-8'))
         response , disconnect_client = houseMiddleware.parse_house_command(self, line)
         if response != False:
             self.sendLine(response)
-            print("Responded with -> " + response.decode('utf-8'))
+            # print("Responded with -> " + response.decode('utf-8'))
         
         if(disconnect_client):
             self.transport.loseConnection()

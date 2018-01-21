@@ -17,12 +17,13 @@ Public Class MainUI
     Private state2 As Integer = 0
 
     Private Delegate Sub _addLog(ByVal text As String, ByVal color As Color)
+    Private Delegate Sub _changeText(ByVal text As String, ByVal ctl As Control)
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         'SplashScreen.ShowDialog()
         'Set instance
         mainForm = Me
-        changeProgress(10)
+
         'Hardware comport 
         Dim comport As String = ""
 
@@ -76,9 +77,9 @@ Public Class MainUI
 
         devManager = New DeviceManager()
         devManager.addDevice("TLC5940", New Integer() {9, 11, 12, 51, 52}, 5, 1)
-        devManager.addDevice("LED ZELENA", New Integer() {13}, 2, 2, 1)
+        devManager.addDevice("LED GREEN", New Integer() {13}, 2, 2, 1)
         devManager.addDevice("LED PLAVA", New Integer() {13}, 2, 3)
-        devManager.isInitialized = True
+
         resLoaded = True
     End Sub
 
@@ -113,8 +114,18 @@ Public Class MainUI
 
     End Sub
 
-    Public Sub changeProgress(ByVal percent As Integer)
-        ProgressBar1.Value += percent
+    Public Sub ChangeText(ByVal text As String, ByVal ctl As Control)
+        Try
+            If InvokeRequired Then
+
+                Me.Invoke(New _changeText(AddressOf ChangeText), text, ctl)
+                Return
+     
+
+            End If
+            ctl.Text = text
+        Catch ex As ObjectDisposedException
+        End Try
     End Sub
 
     Private Sub Button1_Click_1(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
@@ -167,9 +178,6 @@ Public Class MainUI
         dev.ChangeState(New Object() {TextBox2.Text})
     End Sub
 
-    Private Sub txtLog_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtLog.TextChanged
-
-    End Sub
 
 
 End Class

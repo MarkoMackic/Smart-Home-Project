@@ -19,8 +19,12 @@ Public Class MasterController
     Private GPSResetEvent As ManualResetEvent = New ManualResetEvent(True)
     Private GPSThreadRunning As Boolean = False
     Private GPSTimeout As Integer = 400
+    Private GPSByteCount As Integer = 0
 
-    Public digitalPins, pwmPins, analogPins As String
+    Private HardwareAverageSpeed As Double = 0
+    Private UpdateUIState As DateTime
+
+    Public digitalPins, analogPins As String
 
     Private timeSent As DateTime
 
@@ -41,7 +45,7 @@ Public Class MasterController
                 DeviceLogin(authmessage)
         End Select
 
-
+        UpdateUIState = Now
     End Sub
 
     Public Sub DeviceLogin(ByVal authmessage As String)
@@ -63,6 +67,7 @@ Public Class MasterController
 
 
             timeSent = Now
+            hardwareChannel.sendData("pds", True, Me, "pinStateRecv")
             hardwareChannel.sendData("pas", True, Me, "pinStateRecv")
             If Not GPSResetEvent.WaitOne(GPSTimeout) Then
                 addLog("Recieving data timeout")
@@ -118,11 +123,26 @@ Public Class MasterController
     'Serial message handlers...
 
     Public Sub pinStateRecv(ByVal msg As String)
-      
-        If msg.StartsWith("<an>") Then
+        If msg.StartsWith("<ds>") Then
+            digitalPins = msg
+            GPSByteCount += msg.Length
+        ElseIf msg.StartsWith("<an>") Then
             analogPins = msg
+            GPSByteCount += msg.Length
+            Dim GPSRespTime As Double = Now.Subtract(timeSent).TotalSeconds
+            'MsgBox(GPSRespTime)
+            'MsgBox(GPSByteCount)
+            HardwareAverageSpeed = (HardwareAverageSpeed + GPSByteCount / GPSRespTime) / 2
+            GPSByteCount = 0
+            If Now.Subtract(UpdateUIState).TotalMilliseconds > 200 Then
+                UpdateUIState = Now
+                mainForm.ChangeText(Int(HardwareAverageSpeed) & " bytes/s", mainForm.lblHardwareSpeed)
+            End If
+
+
             GPSResetEvent.Set()
-        End If
+
+            End If
 
     End Sub
 

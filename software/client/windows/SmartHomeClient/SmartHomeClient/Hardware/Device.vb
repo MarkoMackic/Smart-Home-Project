@@ -103,10 +103,10 @@ Public Class Device
         If Not Me.Master Is Nothing Then
             tempObj.MasterName = Me.Master.Name
         End If
+        tempObj.State = Driver.StateStr()
 
 
-
-
+        Return tempObj
 
 
     End Function

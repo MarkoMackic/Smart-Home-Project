@@ -1,6 +1,6 @@
 ﻿Imports SmartHomeClient.Globals
 Namespace Drivers
-    Public Class PWMDriver
+    Public Class PWM
         Inherits Drivers.Driver
 
         Public Shadows Event StateChanged(ByVal state As String)
@@ -129,7 +129,7 @@ Namespace Drivers
         Public Sub InitalStateCallback(ByVal data As String, ByVal cmd As String)
             Dim isHandled As Boolean
 
-            isHandled = ValueHandler(New Object() {data})
+            isHandled = ValueHandler(New Object() {data}, True)
             If Not isHandled Then
                 Driver.driverLog(String.Format("Driver ({0}) inital state callback failed", device.Name))
             End If

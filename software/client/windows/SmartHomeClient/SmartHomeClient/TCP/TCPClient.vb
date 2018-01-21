@@ -4,45 +4,41 @@ Imports SmartHomeClient.Globals
 
 Namespace NetClients
     Public Class TCPClient
-        Dim currentmessage As String = ""
-        Dim clientSocket As Socket
-        Dim byteData(1023) As Byte
-        Dim ping As Timer
+        Private currentmessage As String = ""
 
         Private tcpIP As String
         Private tcpPort As Integer
+        Private clientSocket As Socket
+        Private byteData(1023) As Byte
+        Private ping As Timer
+
+        Private logColor As Color = Color.Beige
+     
         Public Event lineRecieved(ByVal data As String)
         Public Event servConnected()
+
+
+
         Public Sub New()
             logInstantiation(Me)
         End Sub
+
         Public Function Connect(Optional ByVal address As String = Nothing, Optional ByVal port As Integer = Nothing)
             If address Is Nothing Or port = Nothing Then
                 Return False
             End If
             tcpIP = address
             tcpPort = port
-            Try
-                clientSocket = New Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
-                Dim ipAddress As IPAddress = ipAddress.Parse(address)
-                Dim ipEndPoint As IPEndPoint = New IPEndPoint(ipAddress, port)
-                clientSocket.BeginConnect(ipEndPoint, New AsyncCallback(AddressOf OnConnect), Nothing)
-                Return True
-            Catch ex As SocketException
-
-                mainForm.addLog("Maybe server down or you're not on internet, check your connection and restart application")
-                If Not clientSocket Is Nothing Then
-                    clientSocket.Disconnect(False)
-                End If
-                Return False
-            End Try
-
+            clientSocket = New Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+            Dim ipAddress As IPAddress = ipAddress.Parse(address)
+            Dim ipEndPoint As IPEndPoint = New IPEndPoint(ipAddress, port)
+            clientSocket.BeginConnect(ipEndPoint, New AsyncCallback(AddressOf OnConnect), Nothing)
+            Return True
         End Function
         Private Sub OnConnect(ByVal ar As IAsyncResult)
             Try
 
                 clientSocket.EndConnect(ar)
-                mainForm.addLog("Connection successful, logging in ..")
                 clientSocket.BeginReceive(byteData, 0, byteData.Length, SocketFlags.None, _
                                           New AsyncCallback(AddressOf OnRecieve), clientSocket)
                 ping = New Timer
@@ -56,8 +52,7 @@ Namespace NetClients
             Catch e As Exception
                 clientSocket.Dispose()
                 If MessageBox.Show("Error on connection, try again?", "Error", MessageBoxButtons.OKCancel) = DialogResult.OK Then
-                    mainForm.addLog("Allowed exception while connection") 'log 
-                    Connect() ' connect again
+                    Connect(tcpIP, tcpPort) ' connect again
                 End If
             End Try
 
@@ -91,10 +86,11 @@ Namespace NetClients
                     clientSocket.Disconnect(False)
                 End If
                 clientSocket.Dispose()
-                mainForm.addLog("Error : " & e.Message) 'log error
+                Log("Error : " & e.Message, Me.logColor) 'log error
             End Try
 
         End Sub
+
         Private Sub Read(ByVal msg As String)
             msg = msg.Replace(Chr(0), "")
             currentmessage &= msg 'we append msg to current message 
@@ -104,13 +100,14 @@ Namespace NetClients
                 RaiseEvent lineRecieved(temp(0).Trim())
             End If
         End Sub
+
         Public Sub SendLine(ByVal message As String)
             Try
                 If Not clientSocket Is Nothing And clientSocket.Connected Then
                     clientSocket.Send(Encoding.ASCII.GetBytes(message & vbNewLine)) 'send it and new line
                 End If
             Catch e As Exception
-                mainForm.addLog("Unsuccessful sending of data, disconnecting!")
+                Log("Error : " & e.Message, Me.logColor) 'log error
                 If Not clientSocket Is Nothing Then
                     clientSocket.Disconnect(False)
                     clientSocket.Dispose()

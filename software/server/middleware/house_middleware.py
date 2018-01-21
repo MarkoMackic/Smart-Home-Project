@@ -25,19 +25,15 @@ class HouseMiddleware(object):
     
     def add_house(self, socket, username, password):
         self.houses[socket] = House(username, password)
+        print("Registered house with username " + self.houses[socket].username)
         return True
 
-    def refresh_devices(self, socket, device_list):
+    def refresh_devices(self, socket, device_list_json):
         if socket in self.houses:
-            self.populate_device_list(self.houses[socket], device_list)
+            print(device_list_json)
             return True
         else:
             return False
-
-    def populate_device_list(self, device_list):
-        pass
-    ''' Websocket parser '''    
-
 
 
 class House(object):
@@ -66,3 +62,6 @@ class Device(object):
 if __name__ == "__main__":
     print("Used as extention");
     exit()
+
+
+# Websockets related handling

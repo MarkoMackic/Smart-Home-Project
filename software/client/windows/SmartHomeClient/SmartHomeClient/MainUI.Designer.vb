@@ -26,7 +26,10 @@ Partial Class MainUI
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.ProgressBar1 = New System.Windows.Forms.ProgressBar()
+        Me.lblHardwareSpeed = New System.Windows.Forms.Label()
+        Me.lblNetSpeed = New System.Windows.Forms.Label()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
         Me.TextBox2 = New System.Windows.Forms.TextBox()
         Me.Button5 = New System.Windows.Forms.Button()
         Me.TextBox1 = New System.Windows.Forms.TextBox()
@@ -78,7 +81,10 @@ Partial Class MainUI
         'Panel1
         '
         Me.Panel1.BackColor = System.Drawing.Color.FromArgb(CType(CType(128, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(0, Byte), Integer))
-        Me.Panel1.Controls.Add(Me.ProgressBar1)
+        Me.Panel1.Controls.Add(Me.lblHardwareSpeed)
+        Me.Panel1.Controls.Add(Me.lblNetSpeed)
+        Me.Panel1.Controls.Add(Me.Label4)
+        Me.Panel1.Controls.Add(Me.Label3)
         Me.Panel1.Controls.Add(Me.TextBox2)
         Me.Panel1.Controls.Add(Me.Button5)
         Me.Panel1.Controls.Add(Me.TextBox1)
@@ -93,12 +99,45 @@ Partial Class MainUI
         Me.Panel1.Size = New System.Drawing.Size(717, 418)
         Me.Panel1.TabIndex = 0
         '
-        'ProgressBar1
+        'lblHardwareSpeed
         '
-        Me.ProgressBar1.Location = New System.Drawing.Point(532, 23)
-        Me.ProgressBar1.Name = "ProgressBar1"
-        Me.ProgressBar1.Size = New System.Drawing.Size(157, 23)
-        Me.ProgressBar1.TabIndex = 6
+        Me.lblHardwareSpeed.AutoSize = True
+        Me.lblHardwareSpeed.Font = New System.Drawing.Font("Calibri", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
+        Me.lblHardwareSpeed.Location = New System.Drawing.Point(305, 64)
+        Me.lblHardwareSpeed.Name = "lblHardwareSpeed"
+        Me.lblHardwareSpeed.Size = New System.Drawing.Size(64, 18)
+        Me.lblHardwareSpeed.TabIndex = 11
+        Me.lblHardwareSpeed.Text = "0 bytes/s"
+        '
+        'lblNetSpeed
+        '
+        Me.lblNetSpeed.AutoSize = True
+        Me.lblNetSpeed.Font = New System.Drawing.Font("Calibri", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
+        Me.lblNetSpeed.Location = New System.Drawing.Point(305, 98)
+        Me.lblNetSpeed.Name = "lblNetSpeed"
+        Me.lblNetSpeed.Size = New System.Drawing.Size(64, 18)
+        Me.lblNetSpeed.TabIndex = 10
+        Me.lblNetSpeed.Text = "0 bytes/s"
+        '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.Font = New System.Drawing.Font("Calibri", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
+        Me.Label4.Location = New System.Drawing.Point(106, 98)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(193, 18)
+        Me.Label4.TabIndex = 9
+        Me.Label4.Text = "Net interface average speed : "
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Font = New System.Drawing.Font("Calibri", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
+        Me.Label3.Location = New System.Drawing.Point(30, 64)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(269, 18)
+        Me.Label3.TabIndex = 8
+        Me.Label3.Text = "Hardware communication average speed : "
         '
         'TextBox2
         '
@@ -143,7 +182,7 @@ Partial Class MainUI
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(283, 90)
+        Me.Button2.Location = New System.Drawing.Point(285, 149)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(163, 23)
         Me.Button2.TabIndex = 2
@@ -152,7 +191,7 @@ Partial Class MainUI
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(26, 90)
+        Me.Button1.Location = New System.Drawing.Point(33, 149)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(163, 23)
         Me.Button1.TabIndex = 1
@@ -238,6 +277,9 @@ Partial Class MainUI
     Friend WithEvents TextBox2 As System.Windows.Forms.TextBox
     Friend WithEvents Button5 As System.Windows.Forms.Button
     Friend WithEvents txtLog As System.Windows.Forms.RichTextBox
-    Friend WithEvents ProgressBar1 As System.Windows.Forms.ProgressBar
+    Friend WithEvents lblHardwareSpeed As System.Windows.Forms.Label
+    Friend WithEvents lblNetSpeed As System.Windows.Forms.Label
+    Friend WithEvents Label4 As System.Windows.Forms.Label
+    Friend WithEvents Label3 As System.Windows.Forms.Label
 
 End Class
