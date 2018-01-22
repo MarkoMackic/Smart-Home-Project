@@ -219,19 +219,20 @@ so I could address it.
   * It has thread for pulling data from `msg` string buffer ( this is inefficient, it should be implemented whithout thread and `String` shouldn't be the buffer type, but it serves it's purpose )
   * API : 
      * ```vb
-      Public Sub New(ByVal comName As String, ByVal baudRate As Integer)
+        Public Sub New(ByVal comName As String, ByVal baudRate As Integer)
        ```
+       
      * ```vb
         Public Function sendData(ByVal cmd As String,
-                     Optional ByVal waitForData As Boolean = False,
+                                 Optional ByVal waitForData As Boolean = False,
                                  Optional ByVal caller As Object = Nothing,
                                  Optional ByVal callback As String = "SerialDataRecieved")
-         ```
-     * ```vb
-      Public Function stopCommunication()
        ```
-   * ```vb
-      Public Function stopCommunication()
+     * ```vb
+         Public Function stopCommunication()
+       ```
+     *  ```vb
+         Public Function stopCommunication()
        ```
    * It's API is mostly used by another layer of abstraction which is `MasterController`, and `MainForm` when constructing it.
 * `/Hardware/MasterController.vb`:
@@ -244,13 +245,13 @@ so I could address it.
       Public Sub New(Optional ByVal State As Integer = States.Login)
       ```
     * ```vb
-        Public Function sendData(ByVal cmd As String,
-                     Optional ByVal waitForData As Boolean = False,
-                                 Optional ByVal caller As Object = Nothing,
-                                 Optional ByVal callback As String = "SerialDataRecieved")
+       Public Function sendData(ByVal cmd As String,
+                                Optional ByVal waitForData As Boolean = False,
+                                Optional ByVal caller As Object = Nothing,
+                                Optional ByVal callback As String = "SerialDataRecieved")
          ```
     * ```vb
-      Public Function Destroy()
+       Public Function Destroy()
        ```
   * This module is mostly used to interact with master device hardware. 
   
@@ -265,18 +266,18 @@ so I could address it.
       ```
     * ```vb
         Public Function addDevice(ByVal devName As String,
-                         ByVal devPins() As Integer,
-                         ByVal devType As Integer,
-                         ByVal devId As Integer,
-                         Optional ByVal devMasterId As Integer = -1,
-                         Optional ByVal devAddress As String = Nothing)
-         ```
+                                  ByVal devPins() As Integer,
+                                  ByVal devType As Integer,
+                                  ByVal devId As Integer,
+                                  Optional ByVal devMasterId As Integer = -1,
+                                  Optional ByVal devAddress As String = Nothing)
+      ```
     * ```vb
       Public Sub attachUI(ByVal UI As DeviceManagerUI) -> UI communication not yet implemented
        ```
     * ```vb
       Public Sub Destroy()
-       ```
+      ```
   * Will handle loading devices from database.
 
 
