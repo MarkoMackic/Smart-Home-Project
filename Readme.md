@@ -1,5 +1,5 @@
-# :smile:  Smart Home Automation :smile:
-#### This is project under active development, so don't expect it to do something that works out of the box !
+# :)  Smart Home Automation :)
+#### This is project under active development, so don't expect it to do something that works out of the box ! 
 ---
 ## :book: About 
 
@@ -14,13 +14,13 @@ Source for this is located in `/firmware/` relative to project root. So here is 
 
 ```
 firmware (dir)
-    | MasterDevice (dir)
-        | MasterMega (dir)
+  | MasterDevice (dir)
+    | MasterMega (dir)
 
 When I talk about files in text below, they exist in this directory.
 ```
 
-First thing you need is a single `Arduino Mega` board as master to all other devices, later I plan on supporting other boards but for now I only want this to work on one. If you want to test the program you're going to need a couple of external devices, for now you can use `Digital output devices`, `PWM output devices`, `Tlc 5940`, `Servo` (not currently supported in *client software* code) , so I'll first walk you through the process of how the firmware works, and then I'm going to use one specific part of code which you can reference if you ever want to contribute and write a driver for a device :smile: . The basic idea of this project is that you can control everything relevant to hardware control through serial port. When you first connect to device you should send it `authmessage` which is defined in `MasterMega.ino` because we want to make sure only our client software can use this device.  And then after that you are in command mode and here is a code sample so I can walk you through :
+First thing you need is a single `Arduino Mega` board as master to all other devices, later I plan on supporting other boards but for now I only want this to work on one. If you want to test the program you're going to need a couple of external devices, for now you can use `Digital output devices`, `PWM output devices`, `Tlc 5940`, `Servo` (not currently supported in *client software* code) , so I'll first walk you through the process of how the firmware works, and then I'm going to use one specific part of code which you can reference if you ever want to contribute and write a driver for a device :). The basic idea of this project is that you can control everything relevant to hardware control through serial port. When you first connect to device you should send it `authmessage` which is defined in `MasterMega.ino` because we want to make sure only our client software can use this device.  And then after that you are in command mode and here is a code sample so I can walk you through :
 ```cpp
 
     //interpret the command from pc
@@ -71,8 +71,8 @@ Great, what this code does is it splits the input `char[]` from serial port with
 
 `Servo.h`
 ```cpp
-    
-    #ifndef SERVO_DRIVER
+  
+  #ifndef SERVO_DRIVER
     #define SERVO_DRIVER
 
     #include <Arduino.h>
@@ -88,7 +88,7 @@ Great, what this code does is it splits the input `char[]` from serial port with
 
     #endif
 ```
-Ok, so every driver should have some specific [header guard](https://en.wikipedia.org/wiki/Include_guard), it should include `Arduino.h` for use of `Arduino` std library functions, and include `globals.h` if you need it. I use to include `globals.h` anyway. You should initialize the resources you need, and define handling function.
+Ok, so every driver should have some specific [header guard](https://en.wikipedia.org/wiki/Include_guard), it should include `Arduino.h` for use of `Arduino` std library functions, and include `globals.h` if you need it. I use to include `globals.h` anyway. You should initialize the resources you need, and define handling function. Don't use dynamic memory allocation because of heap fragmentation.
 
 `Servo.cpp`
 ```cpp
@@ -105,7 +105,6 @@ Ok, so every driver should have some specific [header guard](https://en.wikipedi
       for (byte i = 0; i < max_servos; i++) {
         if (servoPins[i] == pin) {
           Serial.println(err_msg);
-          return true;
         }
       }
       //check for available servo
@@ -175,7 +174,62 @@ Here we have my implementation of `Servo driver`, so this driver supports three 
 
 That's it my friends about hardware, drivers, and handlers, you hopefully can now easily write driver for device that you need, but please sure it's not is some way supported in firmware, because if it is, it's easier to write driver in *client software* where you have more hardware resources to play with.
 
-### :large_blue_circle: Software
+---
+### :large_blue_circle: Client software
+Source for this is located in `/software/client/windows/SmartHomeClient/` relative to project root. So here is files structure thats relevant for us now:
+
+```
+software (dir)
+  | client (dir)
+    | windows (dir)
+      | SmartHomeClient (dir)
+              | Resource_DLLS (dir) - containes references to EMGU, XZing, JSON.Net
+                | SmartHomeClient (dir_main)
+                | SmartHomeClient.sln
+
+
+
+```
+*IMPORTANT : When I talk about files in this block below, they exist in directory and 
+subdirectories of SmartHomeClinet (dir_main). So from now on, every path I write 
+is relative to that.*
+
+###### Some information for potential contributors :
+* Requirements are : <b style="color:#aa44fF">EmguCV 3.0.0</b>, <b style="color:#aa44fF">Newtonsoft JSON.Net</b>, <b style="color:#aa44fF" >XZing.Net</b>
+
+ * I don't know but I think resource DLLs are x64. If someone would test this with x86 arhitecture and file an issue,
+so I could address it. 
+
+ * I use Visual Basic 2010 Express IDE for and project is compiled with .NET 4, so if you don't have or want to use this editor and you use newer one please submit only code files you've changed or added, I will somehow link them to existing project.
+
+ * If you contribute, there is just one thing to know for now, I don't have any preferences for coding standards, but the code you write should be easy to understand.
+ 
+###### And now it's time to shortly describe you the lifetime of program, with my opinions about some of them :
+
+* `/MainForm.vb` ( the program entry point) :
+
+  * It loads showing `SerialPortDialog` and `ClientConnectionDialog`, so we take data from those dialogs and we initialize our modules `HardwareComm` , `MessageHandler`, `DBDriver`, `MasterController`, `ClientMiddleware` (if connection data is entered in `ClientConnectionDialog`).
+  * Instances of the modules are held in `Globals` for easier accessing.
+  * It attaches a `LoggedIn` event handler to our `MasterController` so we could continue initialization.
+* `/Hardware/HardwareComm.vb`:
+  * Provides us with serial port communication
+  * Provides us the callback when Arduino responds
+  * It has queue so more requests can be processed 
+  * It has thread for pulling data from `msg` string buffer ( this is inefficient, it should be implemented whithout thread and `String` shouldn't be the buffer type, but it serves it's purpose )
+  * API : 
+      * ```vb
+          Public Function sendData(ByVal cmd As String,
+                         Optional ByVal waitForData As Boolean = False,
+                                   Optional ByVal caller As Object = Nothing,
+                                   Optional ByVal callback As String = "SerialDataRecieved")
+         ```
+     *
+
+
+
+
 
 ### :large_blue_circle: Server
 
+
+# New Document
