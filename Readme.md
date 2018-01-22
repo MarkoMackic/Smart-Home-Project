@@ -1,4 +1,4 @@
-# :)  Smart Home Automation :)
+# :smile:  Smart Home Automation :smile:
 #### This is project under active development, so don't expect it to do something that works out of the box !
 ---
 ## :book: About 
@@ -20,7 +20,7 @@ firmware (dir)
 When I talk about files in text below, they exist in this directory.
 ```
 
-First thing you need is a single `Arduino Mega` board as master to all other devices, later I plan on supporting other boards but for now I only want this to work on one. If you want to test the program you're going to need a couple of external devices, for now you can use `Digital output devices`, `PWM output devices`, `Tlc 5940`, `Servo` (not currently supported in *client software* code) , so I'll first walk you through the process of how the firmware works, and then I'm going to use one specific part of code which you can reference if you ever want to contribute and write a driver for a device :). The basic idea of this project is that you can control everything relevant to hardware control through serial port. When you first connect to device you should send it `authmessage` which is defined in `MasterMega.ino` because we want to make sure only our client software can use this device.  And then after that you are in command mode and here is a code sample so I can walk you through :
+First thing you need is a single `Arduino Mega` board as master to all other devices, later I plan on supporting other boards but for now I only want this to work on one. If you want to test the program you're going to need a couple of external devices, for now you can use `Digital output devices`, `PWM output devices`, `Tlc 5940`, `Servo` (not currently supported in *client software* code) , so I'll first walk you through the process of how the firmware works, and then I'm going to use one specific part of code which you can reference if you ever want to contribute and write a driver for a device :smile: . The basic idea of this project is that you can control everything relevant to hardware control through serial port. When you first connect to device you should send it `authmessage` which is defined in `MasterMega.ino` because we want to make sure only our client software can use this device.  And then after that you are in command mode and here is a code sample so I can walk you through :
 ```cpp
 
     //interpret the command from pc
