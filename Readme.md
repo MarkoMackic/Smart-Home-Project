@@ -105,6 +105,7 @@ Ok, so every driver should have some specific [header guard](https://en.wikipedi
       for (byte i = 0; i < max_servos; i++) {
         if (servoPins[i] == pin) {
           Serial.println(err_msg);
+          return true;
         }
       }
       //check for available servo

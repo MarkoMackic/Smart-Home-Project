@@ -11,6 +11,7 @@ bool servoCommands(char cmd_array[][10]) {
     for (byte i = 0; i < max_servos; i++) {
       if (servoPins[i] == pin) {
         Serial.println(err_msg);
+        return true;
       }
     }
     //check for available servo
