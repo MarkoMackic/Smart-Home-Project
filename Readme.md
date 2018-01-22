@@ -212,28 +212,30 @@ so I could address it.
   * Instances of the modules are held in `Globals` for easier accessing.
   * It attaches a `LoggedIn` event handler to our `MasterController` so we could continue initialization, initializing `DeviceManager`
   * It contains log container, and control panel, for accessing other GUI modules.
-* `/Hardware/HardwareComm.vb`:
-  * Provides us with serial port communication
-  * Provides us the callback when Arduino responds
-  * It has queue so more requests can be processed 
-  * It has thread for pulling data from `msg` string buffer ( this is inefficient, it should be implemented whithout thread and `String` shouldn't be the buffer type, but it serves it's purpose )
-  * API : 
-     * ```vb
-        Public Sub New(ByVal comName As String, ByVal baudRate As Integer)
-       ```
+ * `/Hardware/HardwareComm.vb`:
+   * Provides us with serial port communication
+   * Provides us the callback when Arduino responds
+   * It has queue so more requests can be processed 
+   * It has thread for pulling data from `msg` string buffer ( this is inefficient, it should be implemented whithout thread and `String` shouldn't be the buffer type, but it serves it's purpose )
+   * API : 
+      * ```vb
+         Public Sub New(ByVal comName As String, ByVal baudRate As Integer)
+        ```
        
-     * ```vb
-        Public Function sendData(ByVal cmd As String,
-                                 Optional ByVal waitForData As Boolean = False,
-                                 Optional ByVal caller As Object = Nothing,
-                                 Optional ByVal callback As String = "SerialDataRecieved")
-       ```
-     * ```vb
+      * ```vb
+         Public Function sendData(ByVal cmd As String,
+                                  Optional ByVal waitForData As Boolean = False,
+                                  Optional ByVal caller As Object = Nothing,
+                                  Optional ByVal callback As String = "SerialDataRecieved")
+        ```
+      * ```vb
          Public Function stopCommunication()
-       ```
-     *  ```vb
+        ```
+     
+      * ```vb
          Public Function stopCommunication()
-       ```
+        ```
+   
    * It's API is mostly used by another layer of abstraction which is `MasterController`, and `MainForm` when constructing it.
 * `/Hardware/MasterController.vb`:
   * Manages Arduino master device with higher level of abstraction.
@@ -241,17 +243,17 @@ so I could address it.
   * 1 Thread for getting data about states on analog and digital pins ( implemented with timeout feature ) and will broadcast them for input devices.
   * Measures hardware communication speed on thread since it's most active by the means of communication to device ( I don't know if these calculations are correct, if someone is willing to review it, open issue describing opinion on how to get it more accurate ).
   * API : 
-    * ```vb
-      Public Sub New(Optional ByVal State As Integer = States.Login)
-      ```
-    * ```vb
-       Public Function sendData(ByVal cmd As String,
+     * ```vb
+       Public Sub New(Optional ByVal State As Integer = States.Login)
+       ```
+     * ```vb
+        Public Function sendData(ByVal cmd As String,
                                 Optional ByVal waitForData As Boolean = False,
                                 Optional ByVal caller As Object = Nothing,
                                 Optional ByVal callback As String = "SerialDataRecieved")
-         ```
-    * ```vb
-       Public Function Destroy()
+        ```
+     * ```vb
+        Public Function Destroy()
        ```
   * This module is mostly used to interact with master device hardware. 
   
