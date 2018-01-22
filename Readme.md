@@ -184,8 +184,8 @@ software (dir)
     | windows (dir)
       | SmartHomeClient (dir)
               | Resource_DLLS (dir) - containes references to EMGU, XZing, JSON.Net
-                | SmartHomeClient (dir_main)
-                | SmartHomeClient.sln
+              | SmartHomeClient (dir_main)
+              | SmartHomeClient.sln
 
 
 
