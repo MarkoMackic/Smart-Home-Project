@@ -86,14 +86,15 @@ Public Class MasterController
                 IsLoggedIn = True
                 addLog("Logged in to device")
                 'Raise event, so procedures can go on
-                RaiseEvent LoggedIn()
+
                 'Start listening for pin states
+                GPSThreadRunning = True
                 Dim thr As New Threading.Thread(AddressOf GetPinStates)
                 thr.IsBackground = True
                 thr.Start()
 
-                GPSThreadRunning = True
 
+                RaiseEvent LoggedIn()
             Case "ERROR"
                 addLog("Authentication with hardware failed")
                 Dim res As MsgBoxResult = MsgBox(String.Format("Authentication with the hardware failed, do you want to try again? ({0})", data), MsgBoxStyle.YesNo, "Authentication failed")

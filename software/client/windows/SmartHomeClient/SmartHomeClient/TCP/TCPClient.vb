@@ -82,11 +82,12 @@ Namespace NetClients
                 ReDim byteData(0) ' get bytedata to 0 again
                 clientSocket.BeginReceive(byteData, 0, byteData.Length, SocketFlags.None, New AsyncCallback(AddressOf OnRecieve), clientSocket) 'recieve again
             Catch e As Exception
-                If Not clientSocket Is Nothing Then
+                Try
                     clientSocket.Disconnect(False)
-                End If
-                clientSocket.Dispose()
-                Log("Error : " & e.Message, Me.logColor) 'log error
+                    clientSocket.Dispose()
+                    Log("Error : " & e.Message, Me.logColor) 'log error
+                Catch ex As ObjectDisposedException
+                End Try
             End Try
 
         End Sub

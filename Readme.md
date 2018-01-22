@@ -1,40 +1,180 @@
-# Smart Home Autmation
+# :)  Smart Home Automation :)
+#### This is project under active development, so don't expect it to do something that works out of the box !
+---
+## :book: About 
+
+The goal of this project is to create ecosystem of devices that can be controlled with  `Arduino` microcontroller platform, and create drivers for them to be used in *client software* ( which is written in `Visual Basic` ). And finally connecting software to *server* (which is currently written in `Python`) so user could control those devices directly from browser and read device states at real time.
+ 
+---
+## :book: More details for interested 
+
+### :large_blue_circle: Hardware and firmware
+
+Source for this is located in `/firmware/` relative to project root. So here is files structure thats relevant for us now:
+
+```
+firmware (dir)
+    | MasterDevice (dir)
+        | MasterMega (dir)
+
+When I talk about files in text below, they exist in this directory.
+```
+
+First thing you need is a single `Arduino Mega` board as master to all other devices, later I plan on supporting other boards but for now I only want this to work on one. If you want to test the program you're going to need a couple of external devices, for now you can use `Digital output devices`, `PWM output devices`, `Tlc 5940`, `Servo` (not currently supported in *client software* code) , so I'll first walk you through the process of how the firmware works, and then I'm going to use one specific part of code which you can reference if you ever want to contribute and write a driver for a device :). The basic idea of this project is that you can control everything relevant to hardware control through serial port. When you first connect to device you should send it `authmessage` which is defined in `MasterMega.ino` because we want to make sure only our client software can use this device.  And then after that you are in command mode and here is a code sample so I can walk you through :
+```cpp
+
+    //interpret the command from pc
+    void getCmd() {
+        //...Code before this is currently irelevant to you
+
+        char *pch;
+        cmd_indexer  = 0;
+        char cmd_array[4][10] = {{0}};
+        pch = strtok(input, ":");
+        strcpy(cmd_array[cmd_indexer], pch);
+        while (cmd_indexer < 3) {
+          cmd_indexer++;
+          pch = strtok(0, ":");
+          if (pch != 0) {
+            strcpy(cmd_array[cmd_indexer], pch);
+          } else {
+            strcpy(cmd_array[cmd_indexer], "");
+          }
+        }
+
+        bool isHandled = false;
+    #ifdef GENERIC_DRIVER
+        if (!isHandled) {
+          isHandled = genericCommands(cmd_array);
+        }
+
+    #endif
+    #ifdef SERVO_DRIVER
+        if (!isHandled) {
+          isHandled = servoCommands(cmd_array);
+        }
+    #endif
+    #ifdef TLC5940_DRIVER
+        if (!isHandled) {
+          isHandled = tlc59Commands(cmd_array);
+        }
+    #endif
+
+        //parser end
+        if (!isHandled) Serial.println("CMDERROR");
 
 
-The goal of this project is to do device control with Arduino. The project is divided into couple pieces : 
-* Hardware control over serial port
-* Devices and drivers abstraction layer in software
-* Server for web interfacing
+      }
 
-I've done the hardware control over serial port ( but protocol changes will be done, to increase speed of parsing and execution ). For now there is basic <b>I/O</b> support and <b>Servo</b> is supported. When software connects to master device, it must send 'lo' (log out) and authmessage that is defined when code is uploaded. All the serial messages are parsed when there is '\n' in the buffer, so software needs to take care of that. When master device boots up, all pins are in INPUT mode,.
+```
+Great, what this code does is it splits the input `char[]` from serial port with `:` character, and then passes the array to the handlers. Now you see, every driver has to has it's own handler, and all drivers other than generic can be excluded, so if the user runs out of RAM, he could use only drivers he needs. I'll go over `Servo` driver for example : 
 
-The commands currently supported by hardware are :
-* `pps -> `It will print PWM values ( last written by aw command ) to software in format `<pwm>pin:value;pin:value; ... </pwm>`
-* `pds -> `It will print DIGITAL states ( last written by dw command ) to software in format `<ds>pin:state;pin:state; ... </ds>`
-* `pas -> `It will print ANALOG values read from analog inputs to software in format `<an>pin:value;pin:value; ... </an>`
-* `pm:pin:mode ->` pinMode(pin, mode) . Mode is either 0 if the pin is input or 1 if the pin is output.
-* `dw:pin:state ->` digtialWrite(pin, state) . State is either 0 or 1.
-* `aw:pin:value ->` analogWrite(pin, value). Value is value 0 - 255.
-* `as:pin ->` attachServo(pin). Attaches servo to pin and stores the servo instance to array.
-* `ds:pin ->` detachServo() for servo that is attached to pin.
-* `sp:pin:pos ->` Servo.write(pos) for servo that is attached to pin.
+`Servo.h`
+```cpp
+    
+    #ifndef SERVO_DRIVER
+    #define SERVO_DRIVER
+
+    #include <Arduino.h>
+    #include "globals.h"
+    #include <Servo.h>
 
 
-I hope this command set will be expanded for many more devices. I'll certainly work on that. Currently I'm interested in extending this protocol for SLAVE devices which would be able to have all devices supported on master, because we don't have so many pins on single Arduino. And that's it for hardware part. 
+    const byte max_servos = sizeof(pwmPins);
+    extern Servo servos[max_servos];
+    extern byte servoPins[max_servos];
+
+    bool servoCommands(char cmd_array[][10]);
+
+    #endif
+```
+Ok, so every driver should have some specific [header guard](https://en.wikipedia.org/wiki/Include_guard), it should include `Arduino.h` for use of `Arduino` std library functions, and include `globals.h` if you need it. I use to include `globals.h` anyway. You should initialize the resources you need, and define handling function.
+
+`Servo.cpp`
+```cpp
+
+  #include "servo.h"
+
+  Servo servos[max_servos];
+  byte servoPins[max_servos];
+
+  bool servoCommands(char cmd_array[][10]) {
+    if (strcmp(cmd_array[0], "as") == 0) {
+      byte pin = atoi(cmd_array[1]);
+      //check if the pin is used
+      for (byte i = 0; i < max_servos; i++) {
+        if (servoPins[i] == pin) {
+          Serial.println(err_msg);
+        }
+      }
+      //check for available servo
+      boolean servoFound = false;
+      for (int i = 0; i < max_servos; i++) {
+        if (servos[i].attached() == false) {
+          servos[i].attach(pin);
+          servoPins[i] = pin;
+          servoFound = true;
+          break;
+        }
+      }
+      if (servoFound) {
+        Serial.println(ok_msg);
+      } else {
+        Serial.println(err_msg);
+      }
 
 
-Software is here to get us device abstraction we need. It must query master device to get state of pins or devices, and must be able to control their state based on user input. It provides us with TCP client for our server so we could connect our house to the world. It's not yet done but here is the things I finished:
-* `HardwareComm` is the main serial port abstraction. It's responsible for handling writes to serial port, and invoking callbacks on classes that sent the data. There is a single thread in this module which serves for getting data from `msg` buffer and invoking callbacks.
-* `FaceRecognition` uses EmguCv. It's the UI for managing `faces` table in database and for recognizing faces. It provides us with automated procedures which are defined by `state` variable inside the class.
+    } else if (strcmp(cmd_array[0], "ds") == 0) {
+      //check if there's a servo that's attached to pin, and detach it
+      byte pin = atoi(cmd_array[1]);
+      boolean servoFound = false;
 
-* `MasterDevice	` abstraction over `HardwareComm` ( I don't know  is this needed, but for now I'll keep it)
+      for (byte i = 0; i < max_servos; i++) {
+        if (servos[i].attached() == true && servoPins[i] == pin) {
+          servos[i].detach();
+          servoPins[i] = 0;
+          servoFound = true;
+          break;
+        }
+      }
+      if (servoFound) {
+        Serial.println(ok_msg);
 
-Server will be there to provide web interface. It's not yet started.
+      } else {
+        Serial.println(err_msg);
+      }
+    } else if (strcmp(cmd_array[0], "sp") == 0) {
+      //check if there's a servo that's attached to pin, and write position to it
+      byte pin = atoi(cmd_array[1]);
+      byte pos = atoi(cmd_array[2]);
+      boolean servoFound = false;
+      for (byte i = 0; i < max_servos; i++) {
+        if (servos[i].attached() == true && servoPins[i] == pin) {
+          servos[i].write(pos);
+          servoFound = true;
+          break;
+        }
+      }
+      if (servoFound) {
+        Serial.println(ok_msg);
+
+      } else {
+        Serial.println(err_msg);
+      }
+    } else {
+      return false;
+    }
+    return true;
+
+  }
 
 
+```
+Here we have my implementation of `Servo driver`, so this driver supports three commands `as` (attachServo), `ds` (detachServo), `sp` (servoPosition). I think the code is self explainable, if not please add issue and I'll update readme. Main command is in `cmd_array[0]` and parameters are at indexes `1 to 3`, you may add more, but be aware that you are tight on RAM on `Arduino`. Function that handles serial port data should return true if the main command is found, an please make sure to always use `Serial.println` because the *client software* uses `\n` to signal success at receiving message.
 
-<b>If you feel I left something from this README please feel free to contribute, I'd appreciate it very much :).
+That's it my friends about hardware, drivers, and handlers, you hopefully can now easily write driver for device that you need, but please sure it's not is some way supported in firmware, because if it is, it's easier to write driver in *client software* where you have more hardware resources to play with.
 
+### :large_blue_circle: Software
 
-
+### :large_blue_circle: Server
 
