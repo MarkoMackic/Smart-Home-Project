@@ -1,5 +1,5 @@
-# :)  Smart Home Automation :)
-#### This is project under active development, so don't expect it to do something that works out of the box ! 
+# :smile:  Smart Home Automation :smile:
+#### This is project under active development (with many features unfinished, or buggy), so don't expect it to do something that works out of the box ! 
 ---
 ## :book: About 
 
@@ -20,7 +20,7 @@ firmware (dir)
 When I talk about files in text below, they exist in this directory.
 ```
 
-First thing you need is a single `Arduino Mega` board as master to all other devices, later I plan on supporting other boards but for now I only want this to work on one. If you want to test the program you're going to need a couple of external devices, for now you can use `Digital output devices`, `PWM output devices`, `Tlc 5940`, `Servo` (not currently supported in *client software* code) , so I'll first walk you through the process of how the firmware works, and then I'm going to use one specific part of code which you can reference if you ever want to contribute and write a driver for a device :). The basic idea of this project is that you can control everything relevant to hardware control through serial port. When you first connect to device you should send it `authmessage` which is defined in `MasterMega.ino` because we want to make sure only our client software can use this device.  And then after that you are in command mode and here is a code sample so I can walk you through :
+First thing you need is a single `Arduino Mega` board as master to all other devices, later I plan on supporting other boards but for now I only want this to work on one. If you want to test the program you're going to need a couple of external devices, for now you can use `Digital output devices`, `PWM output devices`, `Tlc 5940`, `Servo` (not currently supported in *client software* code) , so I'll first walk you through the process of how the firmware works, and then I'm going to use one specific part of code which you can reference if you ever want to contribute and write a driver for a device :smile:. The basic idea of this project is that you can control everything relevant to hardware control through serial port. When you first connect to device you should send it `authmessage` which is defined in `MasterMega.ino` because we want to make sure only our client software can use this device.  And then after that you are in command mode and here is a code sample so I can walk you through :
 ```cpp
 
     //interpret the command from pc
@@ -210,23 +210,74 @@ so I could address it.
 
   * It loads showing `SerialPortDialog` and `ClientConnectionDialog`, so we take data from those dialogs and we initialize our modules `HardwareComm` , `MessageHandler`, `DBDriver`, `MasterController`, `ClientMiddleware` (if connection data is entered in `ClientConnectionDialog`).
   * Instances of the modules are held in `Globals` for easier accessing.
-  * It attaches a `LoggedIn` event handler to our `MasterController` so we could continue initialization.
+  * It attaches a `LoggedIn` event handler to our `MasterController` so we could continue initialization, initializing `DeviceManager`
+  * It contains log container, and control panel, for accessing other GUI modules.
 * `/Hardware/HardwareComm.vb`:
   * Provides us with serial port communication
   * Provides us the callback when Arduino responds
   * It has queue so more requests can be processed 
   * It has thread for pulling data from `msg` string buffer ( this is inefficient, it should be implemented whithout thread and `String` shouldn't be the buffer type, but it serves it's purpose )
   * API : 
-      * ```vb
-          Public Function sendData(ByVal cmd As String,
-                         Optional ByVal waitForData As Boolean = False,
-                                   Optional ByVal caller As Object = Nothing,
-                                   Optional ByVal callback As String = "SerialDataRecieved")
+     * ```vb
+      Public Sub New(ByVal comName As String, ByVal baudRate As Integer)
+       ```
+     * ```vb
+        Public Function sendData(ByVal cmd As String,
+                     Optional ByVal waitForData As Boolean = False,
+                                 Optional ByVal caller As Object = Nothing,
+                                 Optional ByVal callback As String = "SerialDataRecieved")
          ```
-     *
-
-
-
+     * ```vb
+      Public Function stopCommunication()
+       ```
+   * ```vb
+      Public Function stopCommunication()
+       ```
+   * It's API is mostly used by another layer of abstraction which is `MasterController`, and `MainForm` when constructing it.
+* `/Hardware/MasterController.vb`:
+  * Manages Arduino master device with higher level of abstraction.
+  * Isolates direct SP communication with something more meaningful.
+  * 1 Thread for getting data about states on analog and digital pins ( implemented with timeout feature ) and will broadcast them for input devices.
+  * Measures hardware communication speed on thread since it's most active by the means of communication to device ( I don't know if these calculations are correct, if someone is willing to review it, open issue describing opinion on how to get it more accurate ).
+  * API : 
+    * ```vb
+      Public Sub New(Optional ByVal State As Integer = States.Login)
+      ```
+    * ```vb
+        Public Function sendData(ByVal cmd As String,
+                     Optional ByVal waitForData As Boolean = False,
+                                 Optional ByVal caller As Object = Nothing,
+                                 Optional ByVal callback As String = "SerialDataRecieved")
+         ```
+    * ```vb
+      Public Function Destroy()
+       ```
+  * This module is mostly used to interact with master device hardware. 
+  
+* `/Hardware/DeviceManager.vb`:
+  * Manages Devices objects.
+  * Makes sure there is no pin conflicts between devices.
+  * 1 Thread for sending device data to server, so users could access their house in web browser.
+  * Measures network communication speed on thread since it's most active by the means of communication to server ( I don't know if these calculations are correct, if someone is willing to review it, open issue describing opinion on how to get it more accurate ).
+  * API : 
+    * ```vb
+      Public Sub New()
+      ```
+    * ```vb
+        Public Function addDevice(ByVal devName As String,
+                         ByVal devPins() As Integer,
+                         ByVal devType As Integer,
+                         ByVal devId As Integer,
+                         Optional ByVal devMasterId As Integer = -1,
+                         Optional ByVal devAddress As String = Nothing)
+         ```
+    * ```vb
+      Public Sub attachUI(ByVal UI As DeviceManagerUI) -> UI communication not yet implemented
+       ```
+    * ```vb
+      Public Sub Destroy()
+       ```
+  * Will handle loading devices from database.
 
 
 ### :large_blue_circle: Server
