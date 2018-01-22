@@ -20,12 +20,19 @@ Public Class MainUI
     Private Delegate Sub _changeText(ByVal text As String, ByVal ctl As Control)
 
     Private Sub MainUI_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
+
+
         masterCont.Destroy()
+
         cliManager.Destory()
+
         devManager.Destroy()
+
+
     End Sub
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+
         'SplashScreen.ShowDialog()
         'Set instance
         mainForm = Me

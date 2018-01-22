@@ -75,7 +75,10 @@ Namespace ClientMiddleware
 
 
         Public Sub Destory()
-            tcpCli.Destroy(0)
+            Try
+                tcpCli.Destroy(0)
+            Catch ex As Exception
+            End Try
         End Sub
         'Message handlers 
 

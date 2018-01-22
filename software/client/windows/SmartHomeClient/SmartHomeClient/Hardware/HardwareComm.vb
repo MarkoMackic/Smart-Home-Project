@@ -28,16 +28,21 @@ Public Class HardwareComm
 
     Public Function startCommunication()
         If comPort.IsOpen = False Then
-            comPort.Open()
-            If Me.comPort.IsOpen Then
-                recievingThrRunning = True
-                recievingThr = New Thread(AddressOf processRecievedData)
-                recievingThr.IsBackground = True
-                recievingThr.Start()
-                Return True
-            Else
+            Try
+                comPort.Open()
+                If Me.comPort.IsOpen Then
+                    recievingThrRunning = True
+                    recievingThr = New Thread(AddressOf processRecievedData)
+                    recievingThr.IsBackground = True
+                    recievingThr.Start()
+                    Return True
+                Else
+                    Return False
+                End If
+            Catch ex As Exception
                 Return False
-            End If
+            End Try
+
         Else
             Return False
         End If
@@ -119,33 +124,40 @@ Public Class HardwareComm
                         If waiters.Count > 0 Then
 
 
-
+                            Dim skipString As Boolean = False
                             Dim tempDeq() As Object = waiters.First().Value
                             waiters.RemoveFirst()
                             Dim waiter As Object = tempDeq(0)
                             Dim callback As String = CType(tempDeq(1), String)
                             Dim cmd As String = CType(tempDeq(2), String)
+                            Dim sent As DateTime = tempDeq(3)
+                            If Now.Subtract(sent).TotalMilliseconds > 100 Then
+                                skipString = True
+                            End If
+                            If (Not skipString) Then
 
-                            'MsgBox(tempDeq(1))
-                            Dim callback_msg As String = i.Trim()
-                            Dim task As New Task(Sub()
 
-                                                     Dim magicMethod As MethodInfo = waiter.GetType().GetMethod(callback)
+                                'MsgBox(tempDeq(1))
+                                Dim callback_msg As String = i.Trim()
+                                Dim task As New Task(Sub()
 
-                                                     If Not magicMethod Is Nothing Then
-                                                         If (magicMethod.GetParameters().Count > 1) Then
-                                                             magicMethod.Invoke(waiter, New Object() {callback_msg, cmd})
-                                                         Else
-                                                             magicMethod.Invoke(waiter, New Object() {callback_msg})
+                                                         Dim magicMethod As MethodInfo = waiter.GetType().GetMethod(callback)
+
+                                                         If Not magicMethod Is Nothing Then
+                                                             If (magicMethod.GetParameters().Count > 1) Then
+                                                                 magicMethod.Invoke(waiter, New Object() {callback_msg, cmd})
+                                                             Else
+                                                                 magicMethod.Invoke(waiter, New Object() {callback_msg})
+                                                             End If
+
                                                          End If
 
-                                                     End If
+                                                     End Sub)
 
-                                                 End Sub)
-
-                            task.Start()
+                                task.Start()
 
 
+                            End If
 
                         Else
                             msgHandler.SerialDataRecieved(i.Trim())

@@ -32,15 +32,15 @@ Public Class MasterController
     Public Event LoggedIn()
 
 
-    Sub New(Optional ByVal st As Integer = 1)
+    Sub New(Optional ByVal State As Integer = States.Login)
         logInstantiation(Me)
         If hardwareChannel.startCommunication() Then
             IsConnected = True
             addLog("Connected to device .")
         End If
         hardwareChannel.sendData("lo")
-        Me.state = st
-        Select Case state
+        Me.state = State
+        Select Case Me.state
             Case States.Login
                 DeviceLogin(authmessage)
         End Select
@@ -62,7 +62,7 @@ Public Class MasterController
         End If
     End Sub
 
-    Public Sub GetPinStates()
+    Private Sub GetPinStates()
         While GPSThreadRunning
 
 
@@ -143,13 +143,16 @@ Public Class MasterController
 
             GPSResetEvent.Set()
 
-            End If
+        End If
 
     End Sub
 
     Public Sub Destroy()
-        GPSThreadRunning = False
-        hardwareChannel.stopCommunication()
+        Try
+            GPSThreadRunning = False
+            hardwareChannel.stopCommunication()
+        Catch ex As Exception
+        End Try
     End Sub
     Private Sub addLog(ByVal data As String)
         mainForm.addLog(data, Color.Green)

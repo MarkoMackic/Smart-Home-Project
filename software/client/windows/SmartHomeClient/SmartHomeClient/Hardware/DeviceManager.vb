@@ -121,10 +121,14 @@ Public Class DeviceManager
     End Sub
 
     Public Sub Destroy()
-        sendDevicesThrRunning = False
-        If (sendDevicesThr.ThreadState = ThreadState.Running) Then
-            sendDevicesThr.Abort()
-        End If
+        Try
+            sendDevicesThrRunning = False
+            If (sendDevicesThr.ThreadState = ThreadState.Running) Then
+                sendDevicesThr.Abort()
+            End If
+        Catch ex As Exception
+        End Try
+
     End Sub
 
     Public Function GetDevice(ByVal idx As Integer)
