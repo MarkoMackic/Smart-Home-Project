@@ -204,7 +204,7 @@ so I could address it.
 
  * If you contribute, there is just one thing to know for now, I don't have any preferences for coding standards, but the code you write should be easy to understand.
  
-###### And now it's time to shortly describe you the lifetime of program, with my opinions about some of them :
+###### And now it's time to shortly describe the componencts of program, with my opinions about some of them :
 
 * `/MainForm.vb` ( the program entry point) :
 
@@ -219,24 +219,25 @@ so I could address it.
    * It has thread for pulling data from `msg` string buffer ( this is inefficient, it should be implemented whithout thread and `String` shouldn't be the buffer type, but it serves it's purpose )
    * API : 
       * ```vb
-         Public Sub New(ByVal comName As String, ByVal baudRate As Integer)
+         Public Sub New(ByVal comName As String, ByVal baudRate As Integer) ' -> Constructor
         ```
        
       * ```vb
          Public Function sendData(ByVal cmd As String,
                                   Optional ByVal waitForData As Boolean = False,
                                   Optional ByVal caller As Object = Nothing,
-                                  Optional ByVal callback As String = "SerialDataRecieved")
+                                  Optional ByVal callback As String = "SerialDataRecieved") ' -> Sends data to device, and adds request to queue if it expects response.
         ```
       * ```vb
-         Public Function stopCommunication()
+         Public Function stopCommunication() ' -> Tries to open SerialPort object used for communication
         ```
      
       * ```vb
-         Public Function stopCommunication()
+         Public Function stopCommunication() ' -> Close and dispose SerialPort object used for communication
         ```
    
    * It's API is mostly used by another layer of abstraction which is `MasterController`, and `MainForm` when constructing it.
+
 * `/Hardware/MasterController.vb`:
   * Manages Arduino master device with higher level of abstraction.
   * Isolates direct SP communication with something more meaningful.
@@ -244,16 +245,17 @@ so I could address it.
   * Measures hardware communication speed on thread since it's most active by the means of communication to device ( I don't know if these calculations are correct, if someone is willing to review it, open issue describing opinion on how to get it more accurate ).
   * API : 
      * ```vb
-       Public Sub New(Optional ByVal State As Integer = States.Login)
+       Public Sub New(Optional ByVal State As Integer = States.Login) ' -> Constructor
        ```
      * ```vb
         Public Function sendData(ByVal cmd As String,
                                 Optional ByVal waitForData As Boolean = False,
                                 Optional ByVal caller As Object = Nothing,
-                                Optional ByVal callback As String = "SerialDataRecieved")
+                                Optional ByVal callback As String = "SerialDataRecieved") ' -> Calls sendData of HardwareComm and it sends it to device, 
+                                                                                          ' adding the request to queue if it expects response.
         ```
      * ```vb
-        Public Function Destroy()
+        Public Function Destroy() ' -> Stops the thread that's pinging data for analog and digital pin states.
        ```
   * This module is mostly used to interact with master device hardware. 
   
@@ -261,10 +263,9 @@ so I could address it.
   * Manages Devices objects.
   * Makes sure there is no pin conflicts between devices.
   * 1 Thread for sending device data to server, so users could access their house in web browser.
-  * Measures network communication speed on thread since it's most active by the means of communication to server ( I don't know if these calculations are correct, if someone is willing to review it, open issue describing opinion on how to get it more accurate ).
   * API : 
     * ```vb
-      Public Sub New()
+      Public Sub New() ' -> Constructor
       ```
     * ```vb
         Public Function addDevice(ByVal devName As String,
@@ -272,18 +273,45 @@ so I could address it.
                                   ByVal devType As Integer,
                                   ByVal devId As Integer,
                                   Optional ByVal devMasterId As Integer = -1,
-                                  Optional ByVal devAddress As String = Nothing)
+                                  Optional ByVal devAddress As String = Nothing) ' Function tries to create new Device instance with parameters supplied
       ```
     * ```vb
-      Public Sub attachUI(ByVal UI As DeviceManagerUI) -> UI communication not yet implemented
+      Public Sub attachUI(ByVal UI As DeviceManagerUI) ' -> UI communication not yet implemented
        ```
     * ```vb
-      Public Sub Destroy()
+      Public Sub Destroy()   ' -> Stops the thread for sending device data to server
       ```
   * Will handle loading devices from database.
+
+* '/Hardware/Device.vb':
+  * Holds basic information about device, like name, pins, type, masterDevice, etc.
+  * Loads the correct Driver (uses Reflection to look for Drivers in SmartHomeProject.Drivers namespace)
+  * API :
+    * ```vb
+        Public Sub New(ByVal devName As String, 
+                       ByVal devPins() As Integer,
+                       ByVal devType As Integer,
+                       ByVal devID As Integer,
+                       Optional ByVal devMaster As Device = Nothing,
+                       Optional ByVal devAddress As String = Nothing) ' -> Constructor
+      ```
+    * ```vb
+        Public Function UpdateState(ByVal state() As Object) As Boolean ' -> Calls UpdateState function of  driver
+      ```
+    * ```vb
+         Public Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing) As Boolean ' -> Calls ChangeState function of  driver
+      ```
+    * ```vb
+        Public Function GeneralFunction(ByVal functionName As String, ByVal params() As Object) ' -> Calls function on driver by name using Reflection
+      ```
+    * ```vb
+        Public Function SerializableObject() ' -> returns JSON serialized device instance.
+      ```
+
+* `/Hardware/Drivers/Driver.vb`
+  * This is generic class of Driver, you can look the drivers I've written for `DigitalOutput`, `PWMOutput`, `TLC5940` to see how it works, drivers are plug and play, you can write your own on another computer  and then transfer it here, compile it with source, and it should work. All Drivers use `masterCont` variable from globals to communicate to hardware. Every driver must have static/shared method `supportType(type As Integer) As Boolean` and if you write driver for your device, you must compare this type to something that does not allready exist, and static/shared method `supportsChild(type As Integer) As Boolean` which means if your device supports the children of `type` then you use this to indicate to the loader, you can see an example in `/Hardware/Drivers/Abstract/TLC5940.vb`.
 
 
 ### :large_blue_circle: Server
 
 
-# New Document
