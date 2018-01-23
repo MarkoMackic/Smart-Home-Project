@@ -208,7 +208,7 @@ so I could address it.
 
 * `/MainForm.vb` ( the program entry point) :
 
-  * It loads showing `SerialPortDialog` and `ClientConnectionDialog`, so we take data from those dialogs and we initialize our modules `HardwareComm` , `MessageHandler`, `DBDriver`, `MasterController`, `ClientMiddleware` (if connection data is entered in `ClientConnectionDialog`).
+  * It loads showing `SerialPortDialog` and `ClientConnectionDialog`, so we take data from those dialogs and we initialize our modules `HardwareComm` , `MessageHandler`, `DBDriver`, `MasterController`, `ClientManager` (if connection data is entered in `ClientConnectionDialog`).
   * Instances of the modules are held in `Globals` for easier accessing.
   * It attaches a `LoggedIn` event handler to our `MasterController` so we could continue initialization, initializing `DeviceManager`
   * It contains log container, and control panel, for accessing other GUI modules.
@@ -283,7 +283,7 @@ so I could address it.
       ```
   * Will handle loading devices from database.
 
-* '/Hardware/Device.vb':
+* `/Hardware/Device.vb`:
   * Holds basic information about device, like name, pins, type, masterDevice, etc.
   * Loads the correct Driver (uses Reflection to look for Drivers in SmartHomeProject.Drivers namespace)
   * API :
@@ -308,10 +308,20 @@ so I could address it.
         Public Function SerializableObject() ' -> returns JSON serialized device instance.
       ```
 
-* `/Hardware/Drivers/Driver.vb`
-  * This is generic class of Driver, you can look the drivers I've written for `DigitalOutput`, `PWMOutput`, `TLC5940` to see how it works, drivers are plug and play, you can write your own on another computer  and then transfer it here, compile it with source, and it should work. All Drivers use `masterCont` variable from globals to communicate to hardware. Every driver must have static/shared method `supportType(type As Integer) As Boolean` and if you write driver for your device, you must compare this type to something that does not allready exist, and static/shared method `supportsChild(type As Integer) As Boolean` which means if your device supports the children of `type` then you use this to indicate to the loader, you can see an example in `/Hardware/Drivers/Abstract/TLC5940.vb`.
+* `/Hardware/Drivers/Driver.vb`:
+  * This is generic class of Driver, you can look the drivers I've written for `DigitalOutput`, `PWMOutput`, `TLC5940` to see how it works, drivers are plug and play, you can write your own on another computer  and then transfer it here, compile it with source, and it should work. All Drivers use `masterCont` variable from globals to communicate to hardware. Every driver must have static/shared method `supportType(type As Integer) As Boolean` and if you write driver for your device, you must compare this type to something that does not already exist, and static/shared method `supportsChild(type As Integer) As Boolean` which means if your device supports the children of `type` then you use this to indicate to the loader, you can see an example in `/Hardware/Drivers/Abstract/TLC5940.vb`.
 
+* `TCP/Middleware/ClientManager.vb`:
+  * This is class that handles web protocol for smart home automation. Basicly it just contains functions shortcuts for sending specific string with `TCPClient` and a parser for parsing answers from server
+
+* `TCP/TCPClient.vb`:
+  * Manages the socket client
+
+
+And that's it my friends about software, a couple of more modules are done, but not used `FaceRecognizer`, `VideoPlayer` (plays just video without audio, and was an experiment) . And now I'm working on the web side of this.
+It's going to be javascript websocket app in Admin LTE panel to manage devices, add them, delete them, and I want to implement some kind of triggers for devices and write drivers for I2C communication, digital and analog inputs, etc.
 
 ### :large_blue_circle: Server
-
+It holds devices states of house (sent from client), and it will provide websocket interface to pull data, or send command to * Client software *
+Docs will be in the code. :smile:
 
