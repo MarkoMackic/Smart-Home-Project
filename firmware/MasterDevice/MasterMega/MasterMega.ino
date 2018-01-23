@@ -123,6 +123,8 @@ void getCmd() {
 
   if (strcmp(input, "pas") == 0) {
     printAnalogStates();
+  } else if (strcmp(input, "pds") == 0){
+    printDigitalStates();
   } else if (strcmp(input, "lo") == 0) {
     vertified = 0;
   } else {
@@ -169,7 +171,27 @@ void getCmd() {
 
 
 
-
+void printDigitalStates(){
+  strcpy(ret,"<ds>");
+  for(byte i=2;i<54;i++){
+    if(i!=53){    
+      snprintf(buf, sizeof(buf), "%i", i);
+      strcat(ret,buf);
+      strcat(ret,":");
+      snprintf(buf, sizeof(buf), "%i", digitalReadOutputPin(i));
+      strcat(ret,buf);
+      strcat(ret,",");    
+    }else{
+      snprintf(buf, sizeof(buf), "%i", i);
+      strcat(ret,buf);
+      strcat(ret,":");
+      snprintf(buf, sizeof(buf), "%i", digitalReadOutputPin(i));
+      strcat(ret,buf);
+      strcat(ret,"</ds>");
+    }
+  }
+  Serial.println(ret);
+}
 
 void printAnalogStates() {
   strcpy(ret, "<an>");
