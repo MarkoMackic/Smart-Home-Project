@@ -6,7 +6,7 @@ Imports Emgu.CV
 Imports System.Data.SqlServerCe
 Imports System.Security
 
-
+Imports System.Threading
 
 Public Class MainUI
 
@@ -21,12 +21,9 @@ Public Class MainUI
 
     Private Sub MainUI_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
 
-
-        masterCont.Destroy()
-
-        cliManager.Destory()
-
-        devManager.Destroy()
+        If Not masterCont Is Nothing Then masterCont.Destroy()
+        If Not cliManager Is Nothing Then cliManager.Destroy()
+        If Not devManager Is Nothing Then devManager.Destroy()
 
 
     End Sub
@@ -149,13 +146,24 @@ Public Class MainUI
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
         Dim dev As Device = devManager.GetDevice(0)
-        dev.ChangeState(New Object() {15, state1})
+        Dim dev2 As Device = devManager.GetDevice(1)
+        Dim r As New Random
+        Dim start As DateTime = Now
+        Dim thr As New Thread(Sub()
+                                  While Now.Subtract(start).TotalSeconds < 15
+                                      dev.ChangeState(New Object() {15, r.Next(4095)})
+                                      dev2.ChangeState(New Object() {r.Next(255).ToString})
 
-        If state1 = 0 Then
-            state1 = 4095
-        Else
-            state1 = 0
-        End If
+                                  End While
+                              End Sub)
+        thr.Start()
+        'dev.ChangeState(New Object() {15, state1})
+
+        'If state1 = 0 Then
+        '    state1 = 4095
+        'Else
+        '    state1 = 0
+        'End If
 
     End Sub
 

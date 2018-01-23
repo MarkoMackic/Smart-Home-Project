@@ -74,7 +74,7 @@ Namespace ClientMiddleware
         End Sub
 
 
-        Public Sub Destory()
+        Public Sub Destroy()
             Try
                 tcpCli.Destroy(0)
             Catch ex As Exception
