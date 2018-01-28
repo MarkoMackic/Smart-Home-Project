@@ -5,10 +5,12 @@ Namespace Drivers
 
     Public Class TLC5940
         Inherits Drivers.Driver
-        Implements Drivers.IDriver
+
 
         Shared supportedChildren As New List(Of Integer) From {1, 2}
-        Public Shared InputMask As String = "NONE"
+
+        Private _acceptStateType = "PIN_VALUE"
+
         Public Shadows Event StateChanged(ByVal state As String)
 
         Private StateString As String = "Abstract"
@@ -46,7 +48,9 @@ Namespace Drivers
         End Function
 
 
-
+        Public Overrides Function AcceptStateType() As String
+            Return Me._acceptStateType
+        End Function
 
 
         Public Sub New(ByVal dev As Device)

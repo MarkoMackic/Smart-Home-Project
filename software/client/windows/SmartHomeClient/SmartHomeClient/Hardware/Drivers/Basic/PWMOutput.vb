@@ -7,6 +7,9 @@ Namespace Drivers
 
         Public StateString As String = "0"
 
+
+        Private _acceptStateType = "NUMERIC"
+
         Dim protocol_operations = New Dictionary(Of Integer, String) From {
             {1, "pm:{0}:{1}"},
             {2, "aw:{0}:{1}"},
@@ -54,6 +57,10 @@ Namespace Drivers
             Return False
         End Function
 
+        Public Overrides Function AcceptStateType() As String
+            Return Me._acceptStateType
+        End Function
+
 
         Public Overrides Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing, Optional ByVal initialDevId As Integer = -1)
             'this can't have slave
@@ -74,7 +81,12 @@ Namespace Drivers
 
 
         Public Overrides Function StateStr(Optional ByVal state As String = Nothing)
-            Return Me.StateString
+            If Not state Is Nothing Then
+                Me.StateString = state
+                Return True
+            Else
+                Return Me.StateString
+            End If
         End Function
 
 
@@ -96,7 +108,7 @@ Namespace Drivers
                         Return True
                     End If
                     If device.Master Is Nothing Then 'means device executes on chip
-                        masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, s), s.ToString(), True, Me, "ChangeStateCallback")
+                        masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, s), s.ToString(), True, Me, "ChangeStateCallback", initialDevId)
                         Return True
                     Else
                         Return device.Master.ChangeState(New Object() {pin, s}, device, initialDevId)
@@ -144,11 +156,16 @@ Namespace Drivers
 
         End Sub
 
-        Public Sub ChangeStateCallback(ByVal data As String, ByVal cmd As String, ByVal slaveId As Integer, ByVal wantedState As String)
-            If data <> "OK" Then
-                Driver.driverLog(String.Format("{0}_driver : Didn't change device state", device.Name))
-            Else
-                device.StateChangeCallback(Me.StateStr())
+        Public Sub ChangeStateCallback(ByVal data As String, ByVal cmd As String, ByVal initialSlaveId As Integer, ByVal wantedState As String)
+            Dim dev As Device = devManager.GetDeviceById(initialSlaveId)
+            If Not dev Is Nothing Then
+                If data.Trim() <> "OK" Then
+                    Driver.driverLog(device.Name & " : Didn't change device state")
+                Else
+                    If wantedState <> Me.StateString Then
+                        dev.StateChangeCallback(wantedState)
+                    End If
+                End If
             End If
         End Sub
 

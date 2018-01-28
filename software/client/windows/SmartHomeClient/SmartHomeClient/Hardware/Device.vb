@@ -1,6 +1,7 @@
 ﻿Imports System.Reflection
 Imports SmartHomeClient.Globals
 Imports System.Dynamic
+Imports SmartHomeClient.Drivers
 
 Public Class Device
     'Will hold device information
@@ -15,23 +16,33 @@ Public Class Device
     Public Master As Device = Nothing
     Public Adress As String = Nothing
 
-    Public Event StateChanged(ByVal state As String)
+    Public Event StateChanged(ByVal devId As Integer, ByVal state As String)
 
     Private Function InstantiateDriver(ByVal type As Integer)
         Dim resultDriver As Object = Nothing
-        Dim types = From t In Assembly.GetExecutingAssembly().GetTypes()
-                     Where t.IsClass And t.Namespace = "SmartHomeClient.Drivers" And t.BaseType.Name = "Driver"
-                     Select t
+        Try
+            Dim types = From t In Assembly.GetExecutingAssembly().GetTypes()
+                         Where t.IsClass And t.GetInterfaces().Contains(GetType(Drivers.IDriver))
+                         Select t
 
 
-        For Each drv_type As Type In types
 
-            If drv_type.GetMethod("supportsType").Invoke(Nothing, New Object() {type}) Then
-                resultDriver = Activator.CreateInstance(drv_type, New Object() {Me})
-                Exit For
-            End If
-        Next
-        Return resultDriver
+            For Each drv_type As Type In types
+
+                If drv_type.GetMethod("supportsType").Invoke(Nothing, New Object() {type}) Then
+                    resultDriver = Activator.CreateInstance(drv_type, New Object() {Me})
+                    Exit For
+                End If
+            Next
+            Return resultDriver
+
+        Catch ex As Exception
+            Return Nothing
+
+        End Try
+
+
+
     End Function
     Private Sub addLog(ByVal data As String)
         mainForm.addLog(data, Color.SteelBlue)
@@ -68,9 +79,11 @@ Public Class Device
     End Sub
 
     Public Sub StateChangeCallback(ByVal state As String)
+
         addLog(String.Format("Device {0} changed state to : {1}", Name, state))
         Driver.StateStr(state)
-        RaiseEvent StateChanged(state)
+        RaiseEvent StateChanged(Me.ID, state)
+
     End Sub
 
     Public Function supportsChild(ByVal devType As Integer)
@@ -88,6 +101,7 @@ Public Class Device
         If isInitalized Then
             If initialDevId = -1 Then
                 Return Driver.ChangeState(state, slave, Me.ID)
+
             Else
                 Return Driver.ChangeState(state, slave, initialDevId)
             End If
@@ -124,9 +138,15 @@ Public Class Device
 
         tempObj.State = Driver.StateStr()
         tempObj.Driver = Driver.GetType.Name.ToString()
+        tempObj.AcceptStateType = Driver.AcceptStateType()
+
 
         Return tempObj
 
 
+    End Function
+
+    Public Function StateStr()
+        Return Driver.StateStr()
     End Function
 End Class

@@ -30,6 +30,7 @@ Partial Class DeviceView
         Me.lblDriver = New System.Windows.Forms.Label()
         Me.lblName = New System.Windows.Forms.Label()
         Me.lblID = New System.Windows.Forms.Label()
+        Me.pnlStateChanger = New System.Windows.Forms.Panel()
         Me.SuspendLayout()
         '
         'Label1
@@ -112,13 +113,22 @@ Partial Class DeviceView
         Me.lblID.TabIndex = 4
         Me.lblID.Text = "ID "
         '
+        'pnlStateChanger
+        '
+        Me.pnlStateChanger.Anchor = System.Windows.Forms.AnchorStyles.Top
+        Me.pnlStateChanger.Location = New System.Drawing.Point(24, 200)
+        Me.pnlStateChanger.Name = "pnlStateChanger"
+        Me.pnlStateChanger.Size = New System.Drawing.Size(204, 80)
+        Me.pnlStateChanger.TabIndex = 8
+        '
         'DeviceView
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
-        Me.BackColor = System.Drawing.SystemColors.ActiveCaption
+        Me.BackColor = System.Drawing.Color.Blue
         Me.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Controls.Add(Me.pnlStateChanger)
         Me.Controls.Add(Me.lblParent)
         Me.Controls.Add(Me.lblDriver)
         Me.Controls.Add(Me.lblName)
@@ -127,9 +137,10 @@ Partial Class DeviceView
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.Label1)
+        Me.ForeColor = System.Drawing.SystemColors.ActiveCaption
         Me.Name = "DeviceView"
         Me.Padding = New System.Windows.Forms.Padding(10)
-        Me.Size = New System.Drawing.Size(244, 189)
+        Me.Size = New System.Drawing.Size(256, 293)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -142,5 +153,6 @@ Partial Class DeviceView
     Friend WithEvents lblDriver As System.Windows.Forms.Label
     Friend WithEvents lblName As System.Windows.Forms.Label
     Friend WithEvents lblID As System.Windows.Forms.Label
+    Friend WithEvents pnlStateChanger As System.Windows.Forms.Panel
 
 End Class

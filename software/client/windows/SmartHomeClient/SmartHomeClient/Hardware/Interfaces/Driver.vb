@@ -5,7 +5,7 @@ Namespace Drivers
 
         Public IsInitalized As Boolean
         Public Version As Integer = 0
-        Public AcceptValueType As String
+        Private _acceptStateType As String
 
         'needed for loading correct driver
         Public Shared Function supportsType(ByVal type As Integer) As Boolean
@@ -22,7 +22,9 @@ Namespace Drivers
             mainForm.addLog(msg, Color.Yellow)
         End Sub
 
-
+        Public Overridable Function AcceptStateType() As String Implements IDriver.AcceptStateType
+            Return Me._acceptStateType
+        End Function
 
         Public Overridable Function StateStr(Optional ByVal state As String = Nothing) Implements IDriver.StateStr
             Return ""

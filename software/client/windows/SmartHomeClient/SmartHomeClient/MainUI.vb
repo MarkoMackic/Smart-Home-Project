@@ -90,7 +90,7 @@ Public Class MainUI
         devManager = New DeviceManager()
         devManager.addDevice("TLC5940", New Integer() {9, 11, 12, 51, 52}, 5, 1)
         devManager.addDevice("LED GREEN", New Integer() {13}, 2, 2, 1)
-        devManager.addDevice("LED PLAVA", New Integer() {13}, 2, 3)
+        devManager.addDevice("LED PLAVA", New Integer() {13}, 1, 3)
 
         resLoaded = True
     End Sub
@@ -178,7 +178,7 @@ Public Class MainUI
     End Sub
 
     Private Sub Button4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button4.Click
-        thr.Abort()
+
         Dim dev As Device = devManager.GetDeviceById(2)
         MsgBox(dev.ID)
         dev.ChangeState(New Object() {TextBox1.Text})

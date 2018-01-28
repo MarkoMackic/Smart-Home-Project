@@ -76,13 +76,14 @@ Public Class DeviceManager
 
         Try
             Dim dev As Device = New Device(devName, devPins, devType, devId, devMaster, devAddress)
+            AddHandler dev.StateChanged, AddressOf deviceStateChanged
             devices.Add(dev)
             Return True
         Catch ex As DriverNotFoundException
             Log("No driver found for : " + devName, logColor)
             Return False
         Catch ex As Exception
-            Log(ex.Message, logColor)
+            MsgBox(ex.Message)
             Return False
         End Try
 
@@ -148,4 +149,22 @@ Public Class DeviceManager
     Public Function GetAllDevices() As List(Of Device)
         Return devices
     End Function
+
+    Public Sub isEqualRef(ByRef dev As Device)
+        For Each d As Device In devices
+            If d.ID = dev.ID Then
+                MsgBox(ReferenceEquals(d, dev))
+            End If
+        Next
+    End Sub
+    Private Sub deviceStateChanged(ByVal devId As Integer, ByVal state As String)
+
+        If Not Me.UI Is Nothing Then
+            Me.UI.deviceStateChanged(devId, state)
+        End If
+
+    End Sub
+
+
+
 End Class
