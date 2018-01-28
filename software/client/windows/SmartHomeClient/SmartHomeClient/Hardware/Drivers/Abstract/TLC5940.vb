@@ -9,8 +9,9 @@ Namespace Drivers
 
         Shared supportedChildren As New List(Of Integer) From {1, 2}
         Public Shared InputMask As String = "NONE"
-        Private StateString As String = "Abstract"
+        Public Shadows Event StateChanged(ByVal state As String)
 
+        Private StateString As String = "Abstract"
         Dim protocol_operations = New Dictionary(Of Integer, String) From {
             {1, "tl59i:{0}"},
             {2, "tl59s:{0}:{1}"},
@@ -57,7 +58,7 @@ Namespace Drivers
             checkPins(pins)
             devicePins = pins
             device = dev
-            masterCont.SendData(String.Format(protocol_operations(CMD.INIT), 1), True, Me, "InitReport")
+            masterCont.SendData(String.Format(protocol_operations(CMD.INIT), 1), , True, Me, "InitReport")
         End Sub
 
         Private Function checkPins(ByVal pins As List(Of Integer))
@@ -66,15 +67,15 @@ Namespace Drivers
             Return True
         End Function
 
-        Public Overrides Function StateStr()
+        Public Overrides Function StateStr(Optional ByVal state As String = Nothing)
             Return Me.StateString
         End Function
 
-        Public Overrides Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing)
+        Public Overrides Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing, Optional ByVal initialDevId As Integer = -1)
 
             Dim isHandled As Boolean = False
 
-            isHandled = PinValueHandler(state, slave)
+            isHandled = PinValueHandler(state, slave, initialDevId)
 
             'this will be call to second one,
             'but this is just an example, daisy chain handlers here like this
@@ -83,14 +84,17 @@ Namespace Drivers
                 'isHandled = SomeHandlerFunction(state,slave)
             End If
 
+
+
             Return isHandled
         End Function
 
         'Serial data handlers 
 
-        Public Overrides Sub SerialDataRecieved(ByVal data As String, ByVal cmd As String)
+        Public Sub SerialDataRecieved(ByVal data As String, ByVal cmd As String)
             Driver.driverLog(String.Format("{0}_driver : {1}", device.Name, data))
         End Sub
+
 
         Public Sub InitReport(ByVal data As String, ByVal cmd As String)
             If data = "OK" Then
@@ -101,33 +105,55 @@ Namespace Drivers
             IsInitalized = True
         End Sub
 
-        Public Overrides Sub ChangeStateCallback(ByVal data As String, ByVal cmd As String)
-            If data <> "OK" Then
-                Driver.driverLog(device.Name & " : Didn't change device state")
+        Public Sub ChangeStateCallback(ByVal data As String, ByVal cmd As String, ByVal initialSlaveId As Integer, ByVal wantedState As String)
+  
+            If initialSlaveId <> -1 Then
+                Dim dev As Device = devManager.GetDeviceById(initialSlaveId)
+                If Not dev Is Nothing Then
+                    If data.Trim() <> "OK" Then
+                        Driver.driverLog(device.Name & " : Didn't change device state")
+                    Else
+                        dev.StateChangeCallback(wantedState)
+                    End If
+                End If
+
             End If
         End Sub
 
 
         'State change handlers
         ' pin, state
-        Function PinValueHandler(ByVal state() As Object, ByVal slave As Device)
+        Function PinValueHandler(ByVal state() As Object, ByVal slave As Device, ByVal initialDevId As Integer)
             If state.Length = 2 And (state.All(Function(x) TypeOf x Is Integer Or TypeOf x Is String)) Then
-                Dim pin, value As Integer
+                Dim pin, value, real_value As Integer
                 If Integer.TryParse(state(0), pin) And Integer.TryParse(state(1), value) Then
+
                     If Not slave Is Nothing Then
                         Select Case slave.Type
                             Case 1
-                                value = value * 4095
+                                real_value = value * 4095
                             Case 2
-                                value = Int(Map(value, 0, 255, 0, 4095))
+                                real_value = Int(Map(value, 0, 255, 0, 4095))
 
                         End Select
+                    Else
+                        real_value = value
                     End If
 
-                    If value > -1 And value < 4096 And pin > -1 And pin < 16 Then
-                        masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, value), True, Me, "ChangeStateCallback")
-                        masterCont.SendData(protocol_operations(CMD.UPDATE), True, Me)
-                        Return True
+                    If real_value > -1 And real_value < 4096 And pin > -1 And pin < 16 Then
+                        If device.Master Is Nothing Then
+                            If slave Is Nothing Then
+                                masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, real_value), Me.StateStr(), True, Me, "ChangeStateCallback")
+                            Else
+                                masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, real_value), value.ToString(), True, Me, "ChangeStateCallback", initialDevId)
+                            End If
+
+                            masterCont.SendData(protocol_operations(CMD.UPDATE), , True, Me)
+                            Return True
+                        Else
+                            Return False
+                        End If
+
                     End If
                 Else
                     Return False

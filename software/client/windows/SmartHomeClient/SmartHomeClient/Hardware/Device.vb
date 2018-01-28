@@ -15,6 +15,7 @@ Public Class Device
     Public Master As Device = Nothing
     Public Adress As String = Nothing
 
+    Public Event StateChanged(ByVal state As String)
 
     Private Function InstantiateDriver(ByVal type As Integer)
         Dim resultDriver As Object = Nothing
@@ -52,9 +53,12 @@ Public Class Device
             Else
                 Throw New Exception("blabla")
             End If
+        Else
+            Master = Nothing
         End If
 
         Driver = InstantiateDriver(Type)
+
         If Driver Is Nothing Then
             Throw New DriverNotFoundException(DRV_NOT_FOUND)
         End If
@@ -62,6 +66,13 @@ Public Class Device
         isInitalized = True
         addLog(String.Format("Device ({0}) initialized.", Name))
     End Sub
+
+    Public Sub StateChangeCallback(ByVal state As String)
+        addLog(String.Format("Device {0} changed state to : {1}", Name, state))
+        Driver.StateStr(state)
+        RaiseEvent StateChanged(state)
+    End Sub
+
     Public Function supportsChild(ByVal devType As Integer)
         Return Driver.GetType().GetMethod("supportsChild").Invoke(Driver, New Object() {devType})
     End Function
@@ -73,9 +84,14 @@ Public Class Device
             Return False
         End If
     End Function
-    Public Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing) As Boolean
+    Public Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing, Optional ByVal initialDevId As Integer = -1) As Boolean
         If isInitalized Then
-            Return Driver.ChangeState(state, slave)
+            If initialDevId = -1 Then
+                Return Driver.ChangeState(state, slave, Me.ID)
+            Else
+                Return Driver.ChangeState(state, slave, initialDevId)
+            End If
+
         Else
             Return False
         End If
@@ -100,11 +116,14 @@ Public Class Device
         tempObj.Name = Me.Name
         tempObj.Type = Me.Type
         tempObj.ID = Me.ID
-        If Not Me.Master Is Nothing Then
+        If Me.Master Is Nothing Then
+            tempObj.MasterName = "NO_MASTER"
+        Else
             tempObj.MasterName = Me.Master.Name
         End If
-        tempObj.State = Driver.StateStr()
 
+        tempObj.State = Driver.StateStr()
+        tempObj.Driver = Driver.GetType.Name.ToString()
 
         Return tempObj
 

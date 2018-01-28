@@ -1,6 +1,16 @@
-﻿Public Class DeviceManagerUI
+﻿Imports SmartHomeClient.Globals
+
+Public Class DeviceManagerUI
 
     Private Sub DeviceManager_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        If Not devManager Is Nothing Then
+            devManager.attachUI(Me)
+            For Each dev As Device In devManager.GetAllDevices()
+                Me.mainContainter.Controls.Add(New DeviceView(dev))
+            Next
+        End If
+
+
 
     End Sub
 

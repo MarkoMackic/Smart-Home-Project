@@ -27,6 +27,7 @@ Partial Class DeviceManagerUI
         '
         'mainContainter
         '
+        Me.mainContainter.BackColor = System.Drawing.Color.MintCream
         Me.mainContainter.Dock = System.Windows.Forms.DockStyle.Fill
         Me.mainContainter.Location = New System.Drawing.Point(0, 0)
         Me.mainContainter.Name = "mainContainter"

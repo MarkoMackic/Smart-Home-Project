@@ -6,7 +6,6 @@ Namespace Drivers
     Public Class DigitalOutput
         Inherits Drivers.Driver
 
-        Public Shadows Event StateChanged(ByVal state As String)
         Public StateString As String = "0"
 
         Dim protocol_operations = New Dictionary(Of Integer, String) From {
@@ -32,11 +31,11 @@ Namespace Drivers
             pin = pins(0)
             device = dev
 
-
-
-            masterCont.SendData(String.Format(protocol_operations(CMD.SETMODE), pin, 1), True, Me, "PinModeCallback")
             If dev.Master Is Nothing Then
-                masterCont.SendData(String.Format(protocol_operations(CMD.GETVALUE), pin), True, Me, "InitalStateCallback")
+                masterCont.SendData(String.Format(protocol_operations(CMD.SETMODE), pin, 1), , True, Me, "PinModeCallback")
+                masterCont.SendData(String.Format(protocol_operations(CMD.GETVALUE), pin), , True, Me, "InitalStateCallback")
+            Else
+                Driver.driverLog(String.Format("Device ({0}) is initiated, everything is on parent dev now", dev.Name))
             End If
 
 
@@ -54,42 +53,43 @@ Namespace Drivers
             Return False
         End Function
 
-        Public Overrides Function StateStr()
+        Public Overrides Function StateStr(Optional ByVal state As String = Nothing)
             Return Me.StateString
         End Function
 
 
-        Public Overrides Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing)
+        Public Overrides Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing, Optional ByVal initialDevId As Integer = -1)
 
             Dim isHandled As Boolean
 
-            isHandled = ValueHandler(state)
+            isHandled = ValueHandler(state, slave, initialDevId)
             If Not isHandled Then
                 'daisy chain this block for additional handlers
             End If
 
             Return isHandled
 
+
         End Function
 
         'State change handlers
-        Private Function ValueHandler(ByVal state() As Object, Optional ByVal validate As Boolean = False)
+        Private Function ValueHandler(ByVal state() As Object, Optional ByVal slave As Device = Nothing, Optional ByVal initialDevId As Integer = -1, Optional ByVal validate As Boolean = False)
             If state.Length = 1 Then
                 Dim s As Integer = CType(state(0), Integer)
                 If s = 1 Or s = 0 Then
                     If Me.StateString <> s.ToString() Then
                         Me.StateString = s.ToString()
-                        RaiseEvent StateChanged(Me.StateString)
                         Driver.driverLog(String.Format("Driver ({0}) state change : {1} ", device.Name, StateString))
                     End If
                     If validate Then
                         Return True
                     End If
+
                     If device.Master Is Nothing Then 'means device executes on chip
-                        masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, s), True, Me, "ChangeStateCallback")
+                        masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, s), s.ToString(), True, Me, "ChangeStateCallback")
                         Return True
                     Else
-                        Return device.Master.ChangeState(New Object() {pin, s}, device)
+                        Return device.Master.ChangeState(New Object() {pin, s}, device, initialDevId)
                     End If
 
 
@@ -118,7 +118,7 @@ Namespace Drivers
         Public Sub InitalStateCallback(ByVal data As String, ByVal cmd As String)
             Dim isHandled As Boolean
 
-            isHandled = ValueHandler(New Object() {data}, True)
+            isHandled = ValueHandler(New Object() {data}, validate:=True)
             'you can daisychain here too
             If Not isHandled Then
                 Driver.driverLog(String.Format("Driver ( {0} ) failed inital state set", device.Name))
@@ -127,11 +127,11 @@ Namespace Drivers
 
         End Sub
 
-        Public Overrides Sub SerialDataRecieved(ByVal data As String, ByVal cmd As String)
+        Public Sub SerialDataRecieved(ByVal data As String, ByVal cmd As String)
             Driver.driverLog(String.Format("{0}_driver : {1}", device.Name, data))
         End Sub
 
-        Public Overrides Sub ChangeStateCallback(ByVal data As String, ByVal cmd As String)
+        Public Sub ChangeStateCallback(ByVal data As String, ByVal cmd As String, ByVal slaveId As Integer, ByVal wantedState As String)
             If data <> "OK" Then
                 Driver.driverLog(String.Format("{0}_driver : Didn't change device state", device.Name))
             Else

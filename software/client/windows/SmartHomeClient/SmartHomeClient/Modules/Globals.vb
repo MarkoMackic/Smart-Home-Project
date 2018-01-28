@@ -3,13 +3,14 @@
     Public Shared hardwareChannel As HardwareComm = Nothing
     Public Shared msgHandler As MessageHandler = Nothing
     Public Shared dbAdapter As DBDriver = Nothing
-    Public Shared faceRecognizer As FaceRecognition = Nothing
     Public Shared masterCont As MasterController = Nothing
     Public Shared devManager As DeviceManager = Nothing
     Public Shared crProvider As CryptoProvider.AESCrypto = Nothing
     Public Shared tcpCli As NetClients.TCPClient = Nothing
     Public Shared cliManager As ClientMiddleware.ClientManager = Nothing
 
+    Public Shared faceRecognizer As FaceRecognition = Nothing
+    Public Shared devManagerUI As DeviceManagerUI = Nothing
     'it is to hold the instance of MainUI
     Public Shared mainForm As MainUI
 

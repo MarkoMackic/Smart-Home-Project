@@ -65,43 +65,36 @@ Public Class HardwareComm
         End If
     End Function
 
-    Public Function sendData(ByVal cmd As String, Optional ByVal waitForData As Boolean = False, Optional ByVal caller As Object = Nothing, Optional ByVal callback As String = "SerialDataRecieved") As Boolean
+    Public Function sendData(ByVal cmd As String,
+                             Optional ByVal wantedState As String = "SOMETHING_WENT_WRONG",
+                             Optional ByVal waitForData As Boolean = False,
+                             Optional ByVal caller As Object = Nothing,
+                             Optional ByVal callback As String = "SerialDataRecieved",
+                             Optional ByVal initialDevId As Integer = -1) As Boolean
 
         If comPort.IsOpen() Then
-            waiters.AddLast(New Object() {cmd, waitForData, caller, callback, Now})
+            waiters.AddLast(New Object() {cmd, wantedState, waitForData, caller, callback, Now, initialDevId})
             Return True
         Else
             Return False
         End If
     End Function
-    Public Sub CleanUpTimedOutWaiters()
 
-        'Dim Count As Integer = 0
-        'SyncLock lockObject
-        '    For i As Integer = waiters.Count - 1 To 0 Step -1
-
-        '        Dim d As DateTime = waiters.ElementAt(i)(3)
-        '        If Now.Subtract(d).TotalMilliseconds > waitersTimeout Then
-        '            waiters.Remove(waiters.ElementAt(i))
-        '        End If
-
-        '    Next
-        'End SyncLock
-
-
-    End Sub
 
     Private Sub processRecievedData()
   
         While recievingThrRunning
 
             If waiters.Count > 0 And currentWaiter Is Nothing Then
-                currentWaiter = waiters.First.Value
-                waiters.RemoveFirst()
-                '{cmd, waitForData, caller, callback, Now}
-                Dim cmd As String = currentWaiter(0).ToString()
+                Try
+                    currentWaiter = waiters.First.Value
+                    waiters.RemoveFirst()
+                    '{cmd, waitForData, caller, callback, Now}
+                    Dim cmd As String = currentWaiter(0).ToString()
 
-                comPort.Write(cmd + Chr(10))
+                    comPort.Write(cmd + Chr(10))
+                Catch ex As NullReferenceException
+                End Try
 
 
             End If
@@ -109,10 +102,12 @@ Public Class HardwareComm
             If Not currentWaiter Is Nothing Then
 
                 Dim cmd As String = CType(currentWaiter(0), String)
-                Dim waitForData As Boolean = CType(currentWaiter(1), Boolean)
-                Dim waiter As Object = currentWaiter(2)
-                Dim callback As String = CType(currentWaiter(3), String)
-                Dim sent As DateTime = currentWaiter(4)
+                Dim wantedState As String = currentWaiter(1)
+                Dim waitForData As Boolean = CType(currentWaiter(2), Boolean)
+                Dim waiter As Object = currentWaiter(3)
+                Dim callback As String = CType(currentWaiter(4), String)
+                Dim sent As DateTime = currentWaiter(5)
+                Dim intialDevId As Integer = Int(currentWaiter(6))
                 If waitForData = True And Not waiter Is Nothing Then
                     If msg.Contains(Chr(10)) Then
 
@@ -129,11 +124,19 @@ Public Class HardwareComm
                             Dim magicMethod As MethodInfo = waiter.GetType().GetMethod(callback)
 
                             If Not magicMethod Is Nothing Then
-                                If (magicMethod.GetParameters().Count > 1) Then
-                                    magicMethod.Invoke(waiter, New Object() {callback_msg, cmd})
-                                Else
-                                    magicMethod.Invoke(waiter, New Object() {callback_msg})
-                                End If
+                                Dim paramsCount As Integer = magicMethod.GetParameters().Count
+                                Select Case paramsCount
+                                    Case 1
+                                        magicMethod.Invoke(waiter, New Object() {callback_msg})
+                                    Case 2
+                                        magicMethod.Invoke(waiter, New Object() {callback_msg, cmd})
+                                    Case 4
+                                        magicMethod.Invoke(waiter, New Object() {callback_msg, cmd, intialDevId, wantedState})
+
+                                    Case Else
+                                        Throw New NotImplementedException("Not implemented")
+                                End Select
+
 
                             End If
 
@@ -152,13 +155,15 @@ Public Class HardwareComm
 
 
             End If
-
+            Thread.Sleep(2)
         End While
 
     End Sub
     Private Sub dataRecieved(ByVal sender As Object, ByVal e As SerialDataReceivedEventArgs)
+
         Dim tempData As String = comPort.ReadExisting()
         msg &= trimSpaces(tempData)
+
 
     End Sub
 

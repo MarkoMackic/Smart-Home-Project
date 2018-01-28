@@ -137,5 +137,15 @@ Public Class DeviceManager
         End If
         Return Nothing
     End Function
-
+    Public Function GetDeviceById(ByVal id As Integer)
+        For Each dev As Device In devices
+            If dev.ID = id Then
+                Return dev
+            End If
+        Next
+        Return Nothing
+    End Function
+    Public Function GetAllDevices() As List(Of Device)
+        Return devices
+    End Function
 End Class

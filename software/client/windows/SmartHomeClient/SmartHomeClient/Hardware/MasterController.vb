@@ -50,28 +50,31 @@ Public Class MasterController
 
     Public Sub DeviceLogin(ByVal authmessage As String)
         Me.state = States.Login
-        hardwareChannel.sendData(authmessage, True, Me)
+        hardwareChannel.sendData(authmessage, , True, Me)
     End Sub
 
-    Public Sub SendData(ByVal data As String, Optional ByVal waitForData As Boolean = False, Optional ByVal caller As Object = Nothing, Optional ByVal callback As String = "SerialDataRecieved")
+    Public Sub SendData(ByVal data As String,
+                        Optional ByVal wantedState As String = "SOMETHING_WENT_WRONG",
+                        Optional ByVal waitForData As Boolean = False,
+                        Optional ByVal caller As Object = Nothing,
+                        Optional ByVal callback As String = "SerialDataRecieved",
+                        Optional ByVal initialDevId As Integer = -1
+                        )
         'Interface to hardwareChannel 
 
         If IsConnected And IsLoggedIn Then
             addLog("Sending data to controller : " + data)
-            hardwareChannel.sendData(data, waitForData, caller, callback)
+            hardwareChannel.sendData(data, wantedState, waitForData, caller, callback, initialDevId)
         End If
     End Sub
 
     Private Sub GetPinStates()
         While GPSThreadRunning
-
-
             timeSent = Now
-            hardwareChannel.sendData("pds", True, Me, "pinStateRecv")
-            hardwareChannel.sendData("pas", True, Me, "pinStateRecv")
+            hardwareChannel.sendData("pds", , True, Me, "pinStateRecv")
+            hardwareChannel.sendData("pas", , True, Me, "pinStateRecv")
             If Not GPSResetEvent.WaitOne(GPSTimeout) Then
                 addLog("Recieving data timeout")
-                hardwareChannel.CleanUpTimedOutWaiters()
             Else
                 GPSResetEvent.Reset()
             End If

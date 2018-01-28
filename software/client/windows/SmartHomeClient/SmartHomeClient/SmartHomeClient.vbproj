@@ -158,6 +158,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Crypto\AESCrypto.vb" />
+    <Compile Include="DeviceGraphics\DeviceView.Designer.vb">
+      <DependentUpon>DeviceView.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DeviceGraphics\DeviceView.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Exceptions\DriverCreationException.vb" />
     <Compile Include="Exceptions\DeviceNotInitializedException.vb" />
     <Compile Include="Exceptions\DriverNotFoundException.vb" />
@@ -174,10 +180,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DBDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="DeviceManagerUI.Designer.vb">
+    <Compile Include="DeviceGraphics\DeviceManagerUI.Designer.vb">
       <DependentUpon>DeviceManagerUI.vb</DependentUpon>
     </Compile>
-    <Compile Include="DeviceManagerUI.vb">
+    <Compile Include="DeviceGraphics\DeviceManagerUI.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Hardware\Drivers\Basic\DigitalOutput.vb" />
@@ -241,16 +247,20 @@
     <Compile Include="Experiments\VideoPlayer.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="TCP\TcpSSLClient.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ClientConnectionDialog.resx">
       <DependentUpon>ClientConnectionDialog.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DeviceManagerUI.resx">
+    <EmbeddedResource Include="DeviceGraphics\DeviceManagerUI.resx">
       <DependentUpon>DeviceManagerUI.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Camera\FaceRecognition.resx">
       <DependentUpon>FaceRecognition.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DeviceGraphics\DeviceView.resx">
+      <DependentUpon>DeviceView.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainUI.resx">
       <DependentUpon>MainUI.vb</DependentUpon>
@@ -368,9 +378,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DeviceGraphics\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

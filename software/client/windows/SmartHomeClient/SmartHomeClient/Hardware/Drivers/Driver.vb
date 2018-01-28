@@ -22,25 +22,18 @@ Namespace Drivers
             mainForm.addLog(msg, Color.Yellow)
         End Sub
 
-        Public Event StateChanged(ByVal state As String) Implements IDriver.StateChanged
 
-        Public Overridable Function StateStr() Implements IDriver.StateStr
+
+        Public Overridable Function StateStr(Optional ByVal state As String = Nothing) Implements IDriver.StateStr
             Return ""
         End Function
 
-        Public Overridable Sub SerialDataRecieved(ByVal data As String, ByVal cmd As String) Implements IDriver.SerialDataRecieved
-
-        End Sub
-
-        Public Overridable Sub ChangeStateCallback(ByVal data As String, ByVal cmd As String) Implements IDriver.ChangeStateCallback
-
-        End Sub
-
-        Public Overridable Function UpdateState(ByVal state() As Object, Optional ByVal slave As Device = Nothing) Implements IDriver.UpdateState
+     
+        Public Overridable Function GetState(ByVal state() As Object, Optional ByVal slave As Device = Nothing, Optional ByVal initalDevId As Integer = -1) Implements IDriver.UpdateState
             Return 0
         End Function
 
-        Public Overridable Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing) Implements IDriver.ChangeState
+        Public Overridable Function ChangeState(ByVal state() As Object, Optional ByVal slave As Device = Nothing, Optional ByVal initalDevId As Integer = -1) Implements IDriver.ChangeState
             Return 0
         End Function
 

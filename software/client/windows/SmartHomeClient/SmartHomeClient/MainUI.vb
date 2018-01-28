@@ -16,6 +16,8 @@ Public Class MainUI
     Private state1 As Integer = 0
     Private state2 As Integer = 0
 
+    Private thr As Thread
+    Private sendAgain As Boolean = True
     Private Delegate Sub _addLog(ByVal text As String, ByVal color As Color)
     Private Delegate Sub _changeText(ByVal text As String, ByVal ctl As Control)
 
@@ -104,6 +106,7 @@ Public Class MainUI
     End Sub
 
     Public Sub addLog(ByVal text As String, Optional ByVal color As Color = Nothing)
+
         Try
             If InvokeRequired Then
                 Invoke(New _addLog(AddressOf addLog), text, color)
@@ -120,6 +123,7 @@ Public Class MainUI
             txtLog.ScrollToCaret()
         Catch ex As ObjectDisposedException
             Debug.WriteLine("Disposed object accessed")
+
         End Try
 
     End Sub
@@ -146,24 +150,14 @@ Public Class MainUI
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
         Dim dev As Device = devManager.GetDevice(0)
-        Dim dev2 As Device = devManager.GetDevice(1)
-        Dim r As New Random
-        Dim start As DateTime = Now
-        Dim thr As New Thread(Sub()
-                                  While Now.Subtract(start).TotalSeconds < 15
-                                      dev.ChangeState(New Object() {15, r.Next(4095)})
-                                      dev2.ChangeState(New Object() {r.Next(255).ToString})
+     
+        dev.ChangeState(New Object() {15, state1})
 
-                                  End While
-                              End Sub)
-        thr.Start()
-        'dev.ChangeState(New Object() {15, state1})
-
-        'If state1 = 0 Then
-        '    state1 = 4095
-        'Else
-        '    state1 = 0
-        'End If
+        If state1 = 0 Then
+            state1 = 4095
+        Else
+            state1 = 0
+        End If
 
     End Sub
 
@@ -184,8 +178,11 @@ Public Class MainUI
     End Sub
 
     Private Sub Button4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button4.Click
-        Dim dev As Device = devManager.GetDevice(1)
+        thr.Abort()
+        Dim dev As Device = devManager.GetDeviceById(2)
+        MsgBox(dev.ID)
         dev.ChangeState(New Object() {TextBox1.Text})
+
 
 
     End Sub
@@ -203,5 +200,11 @@ Public Class MainUI
 
     Private Sub Panel1_Paint(ByVal sender As System.Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles Panel1.Paint
 
+    End Sub
+
+    Private Sub Button6_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button6.Click
+        Me.Hide()
+        devManagerUI = New DeviceManagerUI()
+        devManagerUI.Show()
     End Sub
 End Class

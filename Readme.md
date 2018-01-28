@@ -1,5 +1,5 @@
 # :smile:  Smart Home Automation :smile:
-#### This is project under active development (with many features unfinished, or buggy), so don't expect it to do something that works out of the box ! 
+#### This is project under active development (with many features unfinished, or buggy), UI is unfinished and currently just serves to test internals, so don't expect it to do something that works out of the box ! 
 ---
 ## :book: About 
 
