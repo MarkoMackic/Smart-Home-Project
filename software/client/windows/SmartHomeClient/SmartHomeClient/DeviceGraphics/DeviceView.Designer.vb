@@ -115,10 +115,14 @@ Partial Class DeviceView
         '
         'pnlStateChanger
         '
-        Me.pnlStateChanger.Anchor = System.Windows.Forms.AnchorStyles.Top
-        Me.pnlStateChanger.Location = New System.Drawing.Point(24, 200)
+        Me.pnlStateChanger.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.pnlStateChanger.AutoSize = True
+        Me.pnlStateChanger.Location = New System.Drawing.Point(30, 200)
+        Me.pnlStateChanger.Margin = New System.Windows.Forms.Padding(10)
         Me.pnlStateChanger.Name = "pnlStateChanger"
-        Me.pnlStateChanger.Size = New System.Drawing.Size(204, 80)
+        Me.pnlStateChanger.Padding = New System.Windows.Forms.Padding(5)
+        Me.pnlStateChanger.Size = New System.Drawing.Size(189, 80)
         Me.pnlStateChanger.TabIndex = 8
         '
         'DeviceView
@@ -140,7 +144,7 @@ Partial Class DeviceView
         Me.ForeColor = System.Drawing.SystemColors.ActiveCaption
         Me.Name = "DeviceView"
         Me.Padding = New System.Windows.Forms.Padding(10)
-        Me.Size = New System.Drawing.Size(256, 293)
+        Me.Size = New System.Drawing.Size(254, 324)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

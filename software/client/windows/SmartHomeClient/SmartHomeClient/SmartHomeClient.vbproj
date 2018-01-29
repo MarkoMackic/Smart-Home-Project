@@ -165,10 +165,16 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DeviceGraphics\StateChangers\IStateChanger.vb" />
-    <Compile Include="DeviceGraphics\StateChangers\OnOff.Designer.vb">
-      <DependentUpon>OnOff.vb</DependentUpon>
+    <Compile Include="DeviceGraphics\StateChangers\OnOffCtl.Designer.vb">
+      <DependentUpon>OnOffCtl.vb</DependentUpon>
     </Compile>
-    <Compile Include="DeviceGraphics\StateChangers\OnOff.vb">
+    <Compile Include="DeviceGraphics\StateChangers\OnOffCtl.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DeviceGraphics\StateChangers\PWMCtl.Designer.vb">
+      <DependentUpon>PWMCtl.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DeviceGraphics\StateChangers\PWMCtl.vb">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Exceptions\DriverCreationException.vb" />
@@ -269,8 +275,11 @@
     <EmbeddedResource Include="DeviceGraphics\DeviceView.resx">
       <DependentUpon>DeviceView.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DeviceGraphics\StateChangers\OnOff.resx">
-      <DependentUpon>OnOff.vb</DependentUpon>
+    <EmbeddedResource Include="DeviceGraphics\StateChangers\OnOffCtl.resx">
+      <DependentUpon>OnOffCtl.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DeviceGraphics\StateChangers\PWMCtl.resx">
+      <DependentUpon>PWMCtl.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainUI.resx">
       <DependentUpon>MainUI.vb</DependentUpon>

@@ -9,7 +9,7 @@ Namespace Drivers
         Public StateString As String = "0"
 
 
-        Private _acceptStateType = "BOOLEAN"
+        Private _acceptStateType = "TYPE:BOOLEAN"
 
         Dim protocol_operations = New Dictionary(Of Integer, String) From {
             {1, "pm:{0}:{1}"},
@@ -103,7 +103,8 @@ Namespace Drivers
                         masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, s), s.ToString(), True, Me, "ChangeStateCallback", initialDevId)
                         Return True
                     Else
-                        Return device.Master.ChangeState(New Object() {pin, s}, device, initialDevId)
+                        device.Master.ChangeState(New Object() {pin, s}, device, initialDevId)
+                        Return device.Master.ChangeState(New Object() {"UPDATE"}, device, initialDevId)
                     End If
 
 

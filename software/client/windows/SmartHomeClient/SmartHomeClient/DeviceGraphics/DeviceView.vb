@@ -28,13 +28,30 @@ Public Class DeviceView
         lblDriver.Text = devProps.Driver
         lblParent.Text = devProps.MasterName
 
+        Dim inputDescriptorConfig As New Hashtable
 
-        Select Case devProps.AcceptStateType
+        For Each confStr As String In devProps.AcceptStateType.ToString().Split(",")
+            Dim singleConfig() As String = confStr.Split(":")
+            inputDescriptorConfig(singleConfig(0).Trim()) = singleConfig(1).Trim()
+        Next
+        Select Case inputDescriptorConfig("TYPE")
             Case "BOOLEAN"
-                Dim ctl As OnOff = New OnOff(dev)
-                ctl.Dock = DockStyle.Fill
+                Dim ctl As OnOffCtl = New OnOffCtl(dev)
+                'ctl.Dock = DockStyle.Fill
                 ctl.TabIndex = 5
                 pnlStateChanger.Controls.Add(ctl)
+            Case "PWM"
+                Try
+                    Dim min As Integer = Integer.Parse(inputDescriptorConfig("MIN"))
+                    Dim max As Integer = Integer.Parse(inputDescriptorConfig("MAX"))
+                    Dim ctl As PWMCtl = New PWMCtl(dev, min, max)
+                    'ctl.Dock = DockStyle.Fill
+                    ctl.TabIndex = 5
+                    pnlStateChanger.Controls.Add(ctl)
+                Catch ex As Exception
+                    MsgBox(String.Format("Driver for device {0} is not written correctly", devProps.Name))
+                End Try
+
 
         End Select
 
@@ -44,6 +61,7 @@ Public Class DeviceView
     End Sub
     Private Sub DeviceView_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.DoubleBuffered = True
+
     End Sub
 
     Private Sub DeviceView_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles Me.Paint
@@ -94,6 +112,10 @@ Public Class DeviceView
     End Sub
 
     Private Sub lblDriver_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lblDriver.Click
+
+    End Sub
+
+    Private Sub lblID_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lblID.Click
 
     End Sub
 End Class

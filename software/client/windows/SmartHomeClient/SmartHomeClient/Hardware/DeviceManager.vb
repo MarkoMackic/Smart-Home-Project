@@ -35,12 +35,12 @@ Public Class DeviceManager
     Private Function pinConflicts(ByVal devMaster As Integer, ByVal devPins() As Integer)
        
             If pinsHashTable.ContainsKey(devMaster) Then
-                If CType(pinsHashTable(devMaster), List(Of Integer)).Any(Function(pin) devPins.Contains(pin)) Then
-                    Return True 'conflict exists
-                Else
+            If CType(pinsHashTable(devMaster), List(Of Integer)).Any(Function(pin) devPins.Contains(pin)) Then
+                Return True 'conflict exists
+            Else
                 pinsHashTable(devMaster) = CType(pinsHashTable(devMaster), List(Of Integer)).Concat(devPins)
-                    Return False
-                End If
+                Return False
+            End If
             Else
                 pinsHashTable(devMaster) = devPins.ToList()
                 Return False

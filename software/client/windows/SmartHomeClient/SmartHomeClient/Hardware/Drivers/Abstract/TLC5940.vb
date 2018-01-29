@@ -9,7 +9,7 @@ Namespace Drivers
 
         Shared supportedChildren As New List(Of Integer) From {1, 2}
 
-        Private _acceptStateType = "PIN_VALUE"
+        Private _acceptStateType = "TYPE:PIN_NUMERIC,MIN:0,MAX:4095"
 
         Public Shadows Event StateChanged(ByVal state As String)
 
@@ -85,7 +85,7 @@ Namespace Drivers
             'but this is just an example, daisy chain handlers here like this
 
             If Not isHandled Then
-                'isHandled = SomeHandlerFunction(state,slave)
+                isHandled = FunctionHandler(state, slave, initialDevId)
             End If
 
 
@@ -152,7 +152,7 @@ Namespace Drivers
                                 masterCont.SendData(String.Format(protocol_operations(CMD.SETSTATE), pin, real_value), value.ToString(), True, Me, "ChangeStateCallback", initialDevId)
                             End If
 
-                            masterCont.SendData(protocol_operations(CMD.UPDATE), , True, Me)
+
                             Return True
                         Else
                             Return False
@@ -165,6 +165,19 @@ Namespace Drivers
             End If
             Return False
         End Function
+
+        Function FunctionHandler(ByVal state() As Object, ByVal slave As Device, ByVal initialDevId As Integer)
+            If state.Length = 1 And TypeOf state(0) Is String Then
+                Select Case state(0).ToString()
+                    Case "UPDATE"
+                        masterCont.SendData(protocol_operations(CMD.UPDATE), , True, Me)
+                        Return True
+                End Select
+
+            End If
+            Return False
+        End Function
+
         'dictonary , pinNumber -> value
     End Class
 End Namespace

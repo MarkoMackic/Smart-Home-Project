@@ -70,4 +70,5 @@ C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeCl
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\bin\Debug\Newtonsoft.Json.dll
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.SplashScreen.resources
 C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.DeviceView.resources
-C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.OnOff.resources
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.OnOffCtl.resources
+C:\Users\LJiljana\Desktop\Smart Home Project\software\client\windows\SmartHomeClient\SmartHomeClient\obj\Debug\SmartHomeClient.PWMCtl.resources

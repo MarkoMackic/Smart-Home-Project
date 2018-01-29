@@ -1,13 +1,12 @@
 ﻿Imports SmartHomeClient.Globals
 
-Public Class OnOff
+Public Class OnOffCtl
     Implements IStateChanger
 
     Public State As Integer
     Private ctlDev As Device
 
     Private Sub ClickHandler(ByVal sender As Object, ByVal e As System.EventArgs)
-
         ctlDev.ChangeState(New Object() {State Xor 1})
     End Sub
 

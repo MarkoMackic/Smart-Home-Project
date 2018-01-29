@@ -2,7 +2,7 @@
 
 Public Class DeviceManagerUI
     Public viewMapper As New Hashtable
-
+    Private maxHeight As Integer = 0
     Private Sub DeviceManagerUI_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
         mainForm.Show()
     End Sub
@@ -14,13 +14,14 @@ Public Class DeviceManagerUI
                 Dim ctl As DeviceView = New DeviceView(dev)
                 Me.mainContainter.Controls.Add(ctl)
                 viewMapper(dev.ID) = ctl
+
             Next
         End If
 
 
 
     End Sub
-
+  
     Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
 
     End Sub
@@ -36,5 +37,7 @@ Public Class DeviceManagerUI
         End If
 
     End Sub
+
+
 
 End Class

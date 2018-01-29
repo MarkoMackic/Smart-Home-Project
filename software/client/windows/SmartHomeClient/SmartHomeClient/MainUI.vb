@@ -89,9 +89,9 @@ Public Class MainUI
 
         devManager = New DeviceManager()
         devManager.addDevice("TLC5940", New Integer() {9, 11, 12, 51, 52}, 5, 1)
-        devManager.addDevice("LED GREEN", New Integer() {13}, 2, 2, 1)
-        devManager.addDevice("LED PLAVA", New Integer() {13}, 1, 3)
-
+        devManager.addDevice("LED GREEN", New Integer() {13}, 2, 2)
+        devManager.addDevice("LED PLAVA", New Integer() {15}, 2, 3, 1)
+        devManager.addDevice("LED Zelena tlc", New Integer() {13}, 1, 4, 1)
         resLoaded = True
     End Sub
 
