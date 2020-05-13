@@ -1,12 +1,27 @@
+
+
+blablaslasdasd
+asd
+a
+sd
+asd
+as
+d
+as
+asd
+
+
+
+
 # :smile:  Smart Home Automation :smile:
-#### This is project under active development (with many features unfinished, or buggy), UI is unfinished and currently just serves to test internals, so don't expect it to do something that works out of the box ! 
+#### This is project under active development (with many features unfinished, or buggy), UI is unfinished and currently just serves to test internals, so don't expect it to do something that works out of the box !
 ---
-## :book: About 
+## :book: About
 
 The goal of this project is to create ecosystem of devices that can be controlled with  `Arduino` microcontroller platform, and create drivers for them to be used in *client software* ( which is written in `Visual Basic` ). And finally connecting software to *server* (which is currently written in `Python`) so user could control those devices directly from browser and read device states at real time.
- 
+
 ---
-## :book: More details for interested 
+## :book: More details for interested
 
 ### :large_blue_circle: Hardware and firmware
 
@@ -67,11 +82,11 @@ First thing you need is a single `Arduino Mega` board as master to all other dev
       }
 
 ```
-Great, what this code does is it splits the input `char[]` from serial port with `:` character, and then passes the array to the handlers. Now you see, every driver has to has it's own handler, and all drivers other than generic can be excluded, so if the user runs out of RAM, he could use only drivers he needs. I'll go over `Servo` driver for example : 
+Great, what this code does is it splits the input `char[]` from serial port with `:` character, and then passes the array to the handlers. Now you see, every driver has to has it's own handler, and all drivers other than generic can be excluded, so if the user runs out of RAM, he could use only drivers he needs. I'll go over `Servo` driver for example :
 
 `Servo.h`
 ```cpp
-  
+
   #ifndef SERVO_DRIVER
     #define SERVO_DRIVER
 
@@ -190,20 +205,20 @@ software (dir)
 
 
 ```
-*IMPORTANT : When I talk about files in this block below, they exist in directory and 
-subdirectories of SmartHomeClinet (dir_main). So from now on, every path I write 
+*IMPORTANT : When I talk about files in this block below, they exist in directory and
+subdirectories of SmartHomeClinet (dir_main). So from now on, every path I write
 is relative to that.*
 
 ###### Some information for potential contributors :
 * Requirements are : <b style="color:#aa44fF">EmguCV 3.0.0</b>, <b style="color:#aa44fF">Newtonsoft JSON.Net</b>, <b style="color:#aa44fF" >XZing.Net</b>
 
  * I don't know but I think resource DLLs are x64. If someone would test this with x86 arhitecture and file an issue,
-so I could address it. 
+so I could address it.
 
  * I use Visual Basic 2010 Express IDE for and project is compiled with .NET 4, so if you don't have or want to use this editor and you use newer one please submit only code files you've changed or added, I will somehow link them to existing project.
 
  * If you contribute, there is just one thing to know for now, I don't have any preferences for coding standards, but the code you write should be easy to understand.
- 
+
 ###### And now it's time to shortly describe the componencts of program, with my opinions about some of them :
 
 * `/MainForm.vb` ( the program entry point) :
@@ -215,13 +230,13 @@ so I could address it.
  * `/Hardware/HardwareComm.vb`:
    * Provides us with serial port communication
    * Provides us the callback when Arduino responds
-   * It has queue so more requests can be processed 
+   * It has queue so more requests can be processed
    * It has thread for pulling data from `msg` string buffer ( this is inefficient, it should be implemented whithout thread and `String` shouldn't be the buffer type, but it serves it's purpose )
-   * API : 
+   * API :
       * ```vb
          Public Sub New(ByVal comName As String, ByVal baudRate As Integer) ' -> Constructor
         ```
-       
+
       * ```vb
          Public Function sendData(ByVal cmd As String,
                                   Optional ByVal waitForData As Boolean = False,
@@ -231,11 +246,11 @@ so I could address it.
       * ```vb
          Public Function stopCommunication() ' -> Tries to open SerialPort object used for communication
         ```
-     
+
       * ```vb
          Public Function stopCommunication() ' -> Close and dispose SerialPort object used for communication
         ```
-   
+
    * It's API is mostly used by another layer of abstraction which is `MasterController`, and `MainForm` when constructing it.
 
 * `/Hardware/MasterController.vb`:
@@ -243,7 +258,7 @@ so I could address it.
   * Isolates direct SP communication with something more meaningful.
   * 1 Thread for getting data about states on analog and digital pins ( implemented with timeout feature ) and will broadcast them for input devices.
   * Measures hardware communication speed on thread since it's most active by the means of communication to device ( I don't know if these calculations are correct, if someone is willing to review it, open issue describing opinion on how to get it more accurate ).
-  * API : 
+  * API :
      * ```vb
        Public Sub New(Optional ByVal State As Integer = States.Login) ' -> Constructor
        ```
@@ -251,19 +266,19 @@ so I could address it.
         Public Function sendData(ByVal cmd As String,
                                 Optional ByVal waitForData As Boolean = False,
                                 Optional ByVal caller As Object = Nothing,
-                                Optional ByVal callback As String = "SerialDataRecieved") ' -> Calls sendData of HardwareComm and it sends it to device, 
+                                Optional ByVal callback As String = "SerialDataRecieved") ' -> Calls sendData of HardwareComm and it sends it to device,
                                                                                           ' adding the request to queue if it expects response.
         ```
      * ```vb
         Public Function Destroy() ' -> Stops the thread that's pinging data for analog and digital pin states.
        ```
-  * This module is mostly used to interact with master device hardware. 
-  
+  * This module is mostly used to interact with master device hardware.
+
 * `/Hardware/DeviceManager.vb`:
   * Manages Devices objects.
   * Makes sure there is no pin conflicts between devices.
   * 1 Thread for sending device data to server, so users could access their house in web browser.
-  * API : 
+  * API :
     * ```vb
       Public Sub New() ' -> Constructor
       ```
@@ -288,7 +303,7 @@ so I could address it.
   * Loads the correct Driver (uses Reflection to look for Drivers in SmartHomeProject.Drivers namespace)
   * API :
     * ```vb
-        Public Sub New(ByVal devName As String, 
+        Public Sub New(ByVal devName As String,
                        ByVal devPins() As Integer,
                        ByVal devType As Integer,
                        ByVal devID As Integer,
